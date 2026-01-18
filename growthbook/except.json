@@ -1,0 +1,98 @@
+[
+  {
+    "config_key": "SHOP_CURRENCIES",
+    "child_key": "utm-campaign-telegram-01-utm-content-20230206-utm-medium-non-rtb",
+    "reason": "unrecognized_pattern",
+    "value": ""
+  },
+  {
+    "config_key": "PUSHER_APP_ID",
+    "child_key": "pusher-app-web-ios",
+    "reason": "unrecognized_pattern",
+    "value": "1166635"
+  },
+  {
+    "config_key": "PUSHER_APP_KEY",
+    "child_key": "pusher-app-web-ios",
+    "reason": "unrecognized_pattern",
+    "value": "57d9d9f52a1171788438"
+  },
+  {
+    "config_key": "LANDING_DESKTOP_COVER",
+    "child_key": "utm_campaign=telegram_04;utm_content=20230303;utm_medium=non-rtb;utm_source=telegram",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/cl7LfCJ.jpg"
+  },
+  {
+    "config_key": "LANDING_MOBILE_COVER",
+    "child_key": "utm_campaign=my_routine;utm_medium=non-rtb;utm_source=cheongdb2u",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/G4KGidV.jpg"
+  },
+  {
+    "config_key": "LANDING_MOBILE_COVER",
+    "child_key": "utm_campaign=my_routine;utm_content=brand;utm_medium=cpc;utm_source=google",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/G4KGidV.jpg"
+  },
+  {
+    "config_key": "LANDING_MOBILE_COVER",
+    "child_key": "utm_campaign=my_routine;utm_content=gatita;utm_medium=cpc;utm_source=google",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/G4KGidV.jpg"
+  },
+  {
+    "config_key": "LANDING_MOBILE_COVER",
+    "child_key": "utm_campaign=telegram_04;utm_content=20230303;utm_medium=non-rtb;utm_source=telegram",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/IuINI1N.jpg"
+  },
+  {
+    "config_key": "SHOP_CURRENCIES",
+    "child_key": "utm-campaign-telegram-01-utm-content-20230206-utm-medium-non-rtb",
+    "reason": "unrecognized_pattern",
+    "value": ""
+  },
+  {
+    "config_key": "PUSHER_APP_ID",
+    "child_key": "pusher-app-web-ios",
+    "reason": "unrecognized_pattern",
+    "value": "1166635"
+  },
+  {
+    "config_key": "PUSHER_APP_KEY",
+    "child_key": "pusher-app-web-ios",
+    "reason": "unrecognized_pattern",
+    "value": "57d9d9f52a1171788438"
+  },
+  {
+    "config_key": "LANDING_DESKTOP_COVER",
+    "child_key": "utm_campaign=telegram_04;utm_content=20230303;utm_medium=non-rtb;utm_source=telegram",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/cl7LfCJ.jpg"
+  },
+  {
+    "config_key": "LANDING_MOBILE_COVER",
+    "child_key": "utm_campaign=my_routine;utm_medium=non-rtb;utm_source=cheongdb2u",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/G4KGidV.jpg"
+  },
+  {
+    "config_key": "LANDING_MOBILE_COVER",
+    "child_key": "utm_campaign=my_routine;utm_content=brand;utm_medium=cpc;utm_source=google",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/G4KGidV.jpg"
+  },
+  {
+    "config_key": "LANDING_MOBILE_COVER",
+    "child_key": "utm_campaign=my_routine;utm_content=gatita;utm_medium=cpc;utm_source=google",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/G4KGidV.jpg"
+  },
+  {
+    "config_key": "LANDING_MOBILE_COVER",
+    "child_key": "utm_campaign=telegram_04;utm_content=20230303;utm_medium=non-rtb;utm_source=telegram",
+    "reason": "unsupported_separator_semicolon",
+    "value": "https://i.imgur.com/IuINI1N.jpg"
+  }
+]
