@@ -438,7 +438,7 @@ class GrowthBook:
             environment (str, optional): The environment to create the feature in (default: "production").
             
         Returns:
-            dict: The created feature data, or None if failed.
+            dict: The created or updated feature data, or None if failed.
             
         Example:
             rules = [
@@ -455,7 +455,8 @@ class GrowthBook:
             ]
             gb.create_feature("USER_EVENT_REPORT_URL", "string", "https://swag.live/battlepass/index.html", rules=rules)
         """
-        url = f"{self.api_url}/features"
+        # Check if feature already exists
+        existing_feature = self.get_feature(feature_id)
         
         # Build the rules array for the environment
         formatted_rules = []
@@ -481,9 +482,7 @@ class GrowthBook:
         
         # Build the payload
         payload = {
-            "id": feature_id,
             "description": description,
-            "valueType": value_type,
             "defaultValue": json.dumps(default_value) if value_type == "json" else str(default_value),
             "owner": self.owner,
             "project": self.project, 
@@ -494,6 +493,15 @@ class GrowthBook:
                 }
             }
         }
+
+        if existing_feature:
+            print(f"Feature '{feature_id}' already exists. Updating...")
+            return self.update_feature(feature_id, payload)
+        
+        # If not exists, add ID to payload and create
+        payload["id"] = feature_id
+        payload["valueType"] = value_type
+        url = f"{self.api_url}/features"
         
         try:
             response = requests.post(url, json=payload, auth=self._get_auth())
@@ -501,7 +509,7 @@ class GrowthBook:
             created_feature = response.json()
             
             print(f"✓ Successfully created feature: {feature_id}")
-            print("feature payload: ", json.dumps(payload))
+            # print("feature payload: ", json.dumps(payload))
             return created_feature
             
         except requests.exceptions.RequestException as e:
@@ -510,23 +518,74 @@ class GrowthBook:
                 print(f"Response: {e.response.text}")
             return None
 
+    def get_feature(self, feature_id):
+        """
+        Get a single feature by ID.
+        
+        Args:
+            feature_id (str): The feature key.
+            
+        Returns:
+            dict: The feature object if found, None otherwise.
+        """
+        url = f"{self.api_url}/features/{feature_id}"
+        try:
+            response = requests.get(url, auth=self._get_auth())
+            if response.status_code == 400:
+                return None
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            # Check if it's a 404 which means not found (handled above actually, but for other errors)
+            if e.response is not None and e.response.status_code == 404:
+                return None
+            print(f"Error getting feature '{feature_id}': {e}")
+            return None
+
+    def update_feature(self, feature_id, payload):
+        """
+        Update an existing feature using PUT.
+        
+        Args:
+            feature_id (str): The feature key.
+            payload (dict): The payload to update.
+            
+        Returns:
+            dict: The updated feature object, or None if failed.
+        """
+        url = f"{self.api_url}/features/{feature_id}"
+        try:
+            response = requests.post(url, json=payload, auth=self._get_auth())
+            response.raise_for_status()
+            updated_feature = response.json()
+            print(f"✓ Successfully updated feature: {feature_id}")
+            return updated_feature
+        except requests.exceptions.RequestException as e:
+            print(f"✗ Error updating feature '{feature_id}': {e}")
+            if e.response is not None:
+                print(f"Response: {e.response.text}")
+            return None
+
 
 # Example Usage
 if __name__ == "__main__":
     # Replace with your actual API Key
-    API_KEY = "secret_admin_zHj0qONAMWpdTswUmfkPnBqIGGznTnUVxqU2qXuU" 
+    API_KEY = "secret_user_pZ0b0Qu6vE2iaGHjbH6xj3kyDksZm79y7HOsyxuMzLw" 
     
     gb = GrowthBook(api_key=API_KEY)
     
     # 1. List attributes (will populate cache)
-    print("Fetching attributes...")
-    attrs = gb.list_attributes()
-    print(f"Found {len(attrs)} attributes.")
+    # print("Fetching attributes...")
+    # attrs = gb.list_attributes()
+    # print(f"Found {len(attrs)} attributes.")
 
-    # 2. Check for an attribute that might not exist, auto-create if missing
-    # Example: 'is_premium_user'
-    attr_name = "nam_dep_trai"
-    attribute = gb.ensure_attribute(attr_name, datatype="string")
+    # # 2. Check for an attribute that might not exist, auto-create if missing
+    # # Example: 'is_premium_user'
+    # attr_name = "nam_dep_trai"
+    # attribute = gb.ensure_attribute(attr_name, datatype="string")
     
-    if attribute:
-        print(f"Attribute details: {attribute}")
+    # if attribute:
+    #     print(f"Attribute details: {attribute}")
+    feature = gb.get_feature("APP_DOWNLOAD_LINK_NORMAL")
+    print(feature)
+
