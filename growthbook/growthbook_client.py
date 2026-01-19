@@ -566,6 +566,145 @@ class GrowthBook:
                 print(f"Response: {e.response.text}")
             return None
 
+    def get_saved_group(self, group_id):
+        """
+        Get a saved group by ID.
+        
+        Args:
+            group_id (str): The ID of the saved group.
+            
+        Returns:
+            dict: The saved group object, or None if not found.
+        """
+        url = f"{self.api_url}/saved-groups/{group_id}"
+        try:
+            response = requests.get(url, auth=self._get_auth())
+            if response.status_code == 404:
+                return None
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            if e.response is not None and e.response.status_code == 404:
+                return None
+            print(f"Error getting saved group '{group_id}': {e}")
+            return None
+
+    def create_saved_group(self, group_id, name, condition, description="", projects=None):
+        """
+        Create a new saved group.
+        
+        Args:
+            group_id (str): The ID for the group (will be used as 'id').
+            name (str): The display name for the group.
+            condition (dict or str): The condition logic (same as rules).
+            description (str, optional): Description of the group.
+            projects (list, optional): List of project IDs. Defaults to [self.project].
+            
+        Returns:
+            dict: The created saved group object.
+        """
+        url = f"{self.api_url}/saved-groups"
+        
+        if projects is None and self.project:
+            projects = [self.project]
+        elif projects is None:
+            projects = []
+            
+        if isinstance(condition, dict):
+            condition_str = json.dumps(condition)
+        else:
+            condition_str = str(condition)
+
+        payload = {
+            "id": group_id,
+            "type": "condition",
+            "name": name,
+            "owner": self.owner,
+            "condition": condition_str,
+            "description": description,
+            "projects": projects
+        }
+        
+        try:
+            response = requests.post(url, json=payload, auth=self._get_auth())
+            response.raise_for_status()
+            created_group = response.json()
+            print(f"✓ Successfully created saved group: {name} ({group_id})")
+            return created_group
+        except requests.exceptions.RequestException as e:
+            print(f"✗ Error creating saved group '{group_id}': {e}")
+            if e.response is not None:
+                print(f"Response: {e.response.text}")
+            return None
+
+    def update_saved_group(self, group_id, payload):
+        """
+        Update an existing saved group.
+        
+        Args:
+            group_id (str): The ID of the saved group.
+            payload (dict): The payload to update.
+            
+        Returns:
+            dict: The updated saved group object.
+        """
+        url = f"{self.api_url}/saved-groups/{group_id}"
+        try:
+            response = requests.put(url, json=payload, auth=self._get_auth())
+            response.raise_for_status()
+            updated_group = response.json()
+            print(f"✓ Successfully updated saved group: {group_id}")
+            return updated_group
+        except requests.exceptions.RequestException as e:
+            print(f"✗ Error updating saved group '{group_id}': {e}")
+            if e.response is not None:
+                print(f"Response: {e.response.text}")
+            return None
+
+    def ensure_saved_group(self, group_id, name, condition, description="", projects=None):
+        """
+        Ensure a saved group exists with the given configuration.
+        Creates it if missing, updates it if exists.
+        
+        Args:
+            group_id (str): The ID for the group.
+            name (str): The display name.
+            condition (dict or str): The condition logic.
+            description (str, optional): Description.
+            projects (list, optional): List of project IDs.
+            
+        Returns:
+            dict: The created or updated saved group object.
+        """
+        existing = self.get_saved_group(group_id)
+        
+        if projects is None and self.project:
+            projects = [self.project]
+        elif projects is None:
+            projects = []
+
+        if isinstance(condition, dict):
+            condition_str = json.dumps(condition)
+        else:
+            condition_str = str(condition)
+
+        payload = {
+            "type": "condition",
+            "name": name,
+            "owner": self.owner,
+            "condition": condition_str,
+            "description": description,
+            "projects": projects
+        }
+        
+        if existing:
+            # We preserve the ID in logic but for PUT it's in URL.
+            # print(f"Saved group '{group_id}' already exists. Updating...")
+            return self.update_saved_group(group_id, payload)
+        else:
+            return self.create_saved_group(group_id, name, condition, description, projects)
+
+
 
 # Example Usage
 if __name__ == "__main__":
