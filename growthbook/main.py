@@ -2,6 +2,7 @@ from read_config import read_configuration
 from growthbook_client import GrowthBook
 import os
 from time import sleep
+from dotenv import load_dotenv
 
 
 def process_config_element(config_key, config_value, growthbook_client):
@@ -151,12 +152,20 @@ if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(current_dir)
     config_file = os.path.join(parent_dir, "configuration.yaml")
+    
+    # Load environment variables
+    load_dotenv()
 
-    # Replace with your actual GrowthBook API key
-    GROWTHBOOK_API_KEY = "secret_user_UIT15l8pxkZW9zFOCUVZE3MQElyMjWuxr345AarL2V8"
-    GROWTHBOOK_PROJECT = "prj_3dlr11bmkdgdq7u"
-    GROWTHBOOK_OWNER = "lina.hoang@sotatek.com"
-    GROWTH_BOOK_API_URL = "https://dev-growthbook-api.swagproject.co/api/v1"
+    # Get credentials from environment variables
+    GROWTHBOOK_API_KEY = os.getenv("GROWTHBOOK_API_KEY")
+    GROWTHBOOK_PROJECT = os.getenv("GROWTHBOOK_PROJECT")
+    GROWTHBOOK_OWNER = os.getenv("GROWTHBOOK_OWNER")
+    GROWTH_BOOK_API_URL = os.getenv("GROWTHBOOK_API_URL")
+
+    if not GROWTHBOOK_API_KEY:
+        print("Error: GROWTHBOOK_API_KEY not found in environment variables")
+        exit(1)
+
     growthbook_client = GrowthBook(
         api_key=GROWTHBOOK_API_KEY,
         project=GROWTHBOOK_PROJECT,

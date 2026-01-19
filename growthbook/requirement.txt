@@ -1,0 +1,5 @@
+growthbook==2.0.0
+python-dotenv==1.2.1
+PyYAML==6.0.3
+typing_extensions==4.15.0
+urllib3==2.6.3
