@@ -370,6 +370,72 @@ class UnleashMigrator:
             print(f"  ✗ Error adding variant: {e}")
             return False
     
+    def move_default_strategy_to_end(self, feature_name: str) -> bool:
+        """Move the default variant strategy to the end of the strategy list by deleting and recreating it."""
+        try:
+            # Get all strategies for this feature
+            strategies_url = f"{self.unleash_url}/api/admin/projects/{self.project}/features/{feature_name}/environments/{self.environment}/strategies"
+            response = session.get(strategies_url, headers=self.headers)
+            
+            if response.status_code != 200:
+                print(f"  ✗ Failed to get strategies: {response.status_code}")
+                return False
+            
+            strategies = response.json()
+            if not strategies or len(strategies) <= 1:
+                # No need to reorder if there's 0 or 1 strategy
+                return True
+            
+            # Find the default strategy (strategy with variant named 'default')
+            default_strategy = None
+            default_strategy_index = None
+            for i, strategy in enumerate(strategies):
+                variants = strategy.get('variants', [])
+                for variant in variants:
+                    if variant.get('name') == 'default':
+                        default_strategy = strategy
+                        default_strategy_index = i
+                        break
+                if default_strategy is not None:
+                    break
+            
+            # If default is not found or already last, nothing to do
+            if default_strategy is None or default_strategy_index == len(strategies) - 1:
+                return True
+            
+            # Delete the default strategy
+            strategy_id = default_strategy['id']
+            delete_url = f"{self.unleash_url}/api/admin/projects/{self.project}/features/{feature_name}/environments/{self.environment}/strategies/{strategy_id}"
+            delete_response = session.delete(delete_url, headers=self.headers)
+            
+            if delete_response.status_code not in [200, 204]:
+                print(f"  ✗ Failed to delete default strategy for reordering: {delete_response.status_code}")
+                return False
+            
+            # Recreate the default strategy (it will be added at the end)
+            # Remove id and sortOrder from the strategy object
+            new_strategy = {
+                "name": default_strategy['name'],
+                "constraints": default_strategy.get('constraints', []),
+                "segments": default_strategy.get('segments', []),
+                "parameters": default_strategy.get('parameters', {}),
+                "variants": default_strategy.get('variants', [])
+            }
+            
+            create_response = session.post(strategies_url, headers=self.headers, json=new_strategy)
+            
+            if create_response.status_code not in [200, 201]:
+                print(f"  ✗ Failed to recreate default strategy: {create_response.status_code}")
+                print(f"    Response: {create_response.text}")
+                return False
+            
+            print(f"  ✓ Moved default strategy to end (last position)")
+            return True
+            
+        except Exception as e:
+            print(f"  ✗ Error reordering strategies: {e}")
+            return False
+    
     def process_default_key(self, feature_name: str, value: Any):
         """Process default key - set as fallback variant."""
         print(f"  → Default variant (fallback)")
@@ -537,6 +603,9 @@ class UnleashMigrator:
                 else:
                     print(f"  → Unknown key type: {key}, setting as default variant")
                     self.set_default_variant(feature_name, value)
+            
+            # After all strategies are added, move default strategy to the end
+            self.move_default_strategy_to_end(feature_name)
 
 
 def main():
