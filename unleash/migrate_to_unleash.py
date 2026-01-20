@@ -112,15 +112,25 @@ class UnleashMigrator:
         except Exception as e:
             print(f"Warning: Could not load segments: {e}")
     
-    def create_context_field(self, field_name: str, description: str = "") -> bool:
-        """Create context field if it doesn't exist."""
+    def create_context_field(self, field_name: str, description: str = "", legal_values: List[str] = None) -> bool:
+        """Create context field if it doesn't exist, or update legal values if provided."""
+        # If context field exists and we have legal values to add, update it
         if field_name in self.existing_context_fields:
+            if legal_values:
+                # Update the context field with new legal values
+                return self.update_context_field(field_name, legal_values)
             return True
+        
+        # Convert legal_values from list of strings to list of objects
+        legal_values_objects = []
+        if legal_values:
+            for value in legal_values:
+                legal_values_objects.append({"value": value})
         
         payload = {
             "name": field_name,
             "description": description or f"Auto-generated context field for {field_name}",
-            "legalValues": [],
+            "legalValues": legal_values_objects,
             "stickiness": False
         }
         
@@ -134,11 +144,67 @@ class UnleashMigrator:
                 self.existing_context_fields.add(field_name)
                 print(f"  ✓ Created context field: {field_name}")
                 return True
+            elif response.status_code == 409:
+                # Context field already exists - try to update it if we have legal values
+                self.existing_context_fields.add(field_name)
+                if legal_values:
+                    return self.update_context_field(field_name, legal_values)
+                return True
             else:
                 print(f"  ✗ Failed to create context field {field_name}: {response.status_code}")
+                # Still try to update if we have legal values and it might already exist
+                if legal_values and response.status_code in [400, 409]:
+                    self.existing_context_fields.add(field_name)
+                    return self.update_context_field(field_name, legal_values)
                 return False
         except Exception as e:
             print(f"  ✗ Error creating context field {field_name}: {e}")
+            return False
+    
+    def update_context_field(self, field_name: str, legal_values: List[str]) -> bool:
+        """Update context field with new legal values (appending to existing ones)."""
+        try:
+            # First, get the existing context field
+            response = session.get(f"{self.unleash_url}/api/admin/context/{field_name}", headers=self.headers)
+            if response.status_code == 200:
+                existing_field = response.json()
+                existing_legal_values = set([v.get('value') if isinstance(v, dict) else v 
+                                             for v in existing_field.get('legalValues', [])])
+                new_legal_values = set(legal_values)
+                
+                # Merge legal values
+                merged_values = list(existing_legal_values.union(new_legal_values))
+                merged_legal_values_objects = [{"value": v} for v in merged_values]
+                
+                # Only update if there are new values
+                if len(merged_values) > len(existing_legal_values):
+                    payload = {
+                        "name": field_name,
+                        "description": existing_field.get('description', ''),
+                        "legalValues": merged_legal_values_objects,
+                        "stickiness": existing_field.get('stickiness', False)
+                    }
+                    
+                    response = session.put(
+                        f"{self.unleash_url}/api/admin/context/{field_name}",
+                        headers=self.headers,
+                        json=payload
+                    )
+                    if response.status_code in [200, 201]:
+                        added_count = len(merged_values) - len(existing_legal_values)
+                        print(f"  ✓ Updated context field: {field_name} (+{added_count} legal values)")
+                        return True
+                    else:
+                        print(f"  ✗ Failed to update context field {field_name}: {response.status_code}")
+                        return False
+                else:
+                    # All values already exist
+                    return True
+            else:
+                print(f"  ✗ Failed to fetch existing context field {field_name}: {response.status_code}")
+                return False
+        except Exception as e:
+            print(f"  ✗ Error updating context field {field_name}: {e}")
             return False
     
     def create_segment(self, segment_name: str, description: str, constraints: List[Dict]) -> Optional[int]:
@@ -380,11 +446,17 @@ class UnleashMigrator:
         """Process operator-based keys - use segments for specific contexts, constraints for others."""
         print(f"  → Operator-based key: {key}")
         
-        # Step 1: Create context field
-        self.create_context_field(key, f"Context field for {key} matching")
-        
         # Check if this context should use segments
         use_segments = key in SEGMENT_ENABLED_CONTEXTS
+        
+        # Step 1: Create context field with legal values for segment-enabled contexts
+        if use_segments:
+            # Collect all values as legal values for the context field
+            legal_values = list(values_dict.keys())
+            self.create_context_field(key, f"Context field for {key} matching", legal_values=legal_values)
+            print(f"    → Added {len(legal_values)} legal value(s) to context field '{key}'")
+        else:
+            self.create_context_field(key, f"Context field for {key} matching")
         
         if use_segments:
             print(f"    → Will use segments for '{key}' (in predefined list)")
