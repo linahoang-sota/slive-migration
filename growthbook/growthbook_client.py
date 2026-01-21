@@ -16,6 +16,9 @@ class GrowthBook:
         # attributes_cache will store a dict mapping property name to attribute data
         self.attributes_cache = {} 
         self._is_cache_loaded = False
+        # saved_groups_cache will store saved groups by both name and id
+        self.saved_groups_cache = {}  # {name: group_data, id: group_data}
+        self._is_saved_groups_cache_loaded = False
         self.project = project
         self.owner = owner
 
@@ -137,12 +140,13 @@ class GrowthBook:
     def process_config_to_rules(self, config_value, config_key=None, except_file="except.json"):
         """
         Process configuration value from configuration.yaml and convert to GrowthBook rules format.
+        Uses saved groups instead of inline conditions for better reusability.
         
         Handles multiple key conventions:
         1. 'default' - The default value
-        2. Simple keys (beta, creator, authenticated, etc.) -> creates condition {is_<key>: true}
-        3. Key=value pairs (country=cn) -> creates condition {country: cn}
-        4. Ampersand-separated (utm_campaign=x&utm_medium=y) -> creates multiple conditions
+        2. Simple keys (beta, creator, authenticated, etc.) -> creates saved group with {is_<key>: true}
+        3. Key=value pairs (country=cn) -> creates saved group with {country: cn}
+        4. Ampersand-separated (utm_campaign=x&utm_medium=y) -> creates saved group with multiple conditions
         
         Skips and logs to except.json:
         - Hyphen-separated conditions (-)
@@ -163,7 +167,7 @@ class GrowthBook:
         Returns:
             tuple: (default_value, rules_list, value_type, attributes_needed, skipped_keys)
                 - default_value: The value from the 'default' key
-                - rules_list: List of rule dictionaries for create_feature
+                - rules_list: List of rule dictionaries for create_feature (using savedGroupTargeting)
                 - value_type: Inferred value type ('string', 'number', 'boolean', 'json')
                 - attributes_needed: Set of attribute names that need to be created
                 - skipped_keys: List of keys that were skipped
@@ -215,11 +219,16 @@ class GrowthBook:
                 attribute_name = f"is_{child_key}"
                 attributes_needed.add(attribute_name)
                 
+                # Create saved group for this condition
+                group_name = child_key
+                condition = {attribute_name: "true"}
+                group_id = self.ensure_saved_group(name=group_name, condition=condition)
+                
                 rule = {
-                    "condition": {attribute_name: "true"},
                     "value": actual_value,
                     "description": f"{child_key} users",
-                    "enabled": True
+                    "enabled": True,
+                    "savedGroupTargeting": [{"matchType": "all", "savedGroups": [group_id]}]
                 }
                 rules.append(rule)
                 continue
@@ -229,11 +238,15 @@ class GrowthBook:
                 condition_dict, attrs = self._parse_ampersand_conditions(child_key)
                 attributes_needed.update(attrs)
                 
+                # Create saved group for this condition
+                group_name = child_key
+                group_id = self.ensure_saved_group(name=group_name, condition=condition_dict)
+                
                 rule = {
-                    "condition": condition_dict,
                     "value": actual_value,
                     "description": child_key,
-                    "enabled": True
+                    "enabled": True,
+                    "savedGroupTargeting": [{"matchType": "all", "savedGroups": [group_id]}]
                 }
                 rules.append(rule)
                 continue
@@ -246,11 +259,16 @@ class GrowthBook:
                 
                 attributes_needed.add(attribute_name)
                 
+                # Create saved group for this condition
+                group_name = child_key
+                condition = {attribute_name: condition_value}
+                group_id = self.ensure_saved_group(name=group_name, condition=condition)
+                
                 rule = {
-                    "condition": {attribute_name: condition_value},
                     "value": actual_value,
                     "description": f"{attribute_name}={condition_value}",
-                    "enabled": True
+                    "enabled": True,
+                    "savedGroupTargeting": [{"matchType": "all", "savedGroups": [group_id]}]
                 }
                 rules.append(rule)
                 continue
@@ -509,7 +527,7 @@ class GrowthBook:
             created_feature = response.json()
             
             print(f"✓ Successfully created feature: {feature_id}")
-            # print("feature payload: ", json.dumps(payload))
+            print("feature payload: ", json.dumps(payload))
             return created_feature
             
         except requests.exceptions.RequestException as e:
@@ -566,6 +584,47 @@ class GrowthBook:
                 print(f"Response: {e.response.text}")
             return None
 
+    def list_saved_groups(self, force_refresh=False):
+        """
+        Lists all saved groups from GrowthBook and updates the local cache.
+        
+        Args:
+            force_refresh (bool): If True, forces a fetch from the API even if cache is loaded.
+            
+        Returns:
+            dict: A dictionary of saved groups keyed by both their name and id.
+        """
+        if self._is_saved_groups_cache_loaded and not force_refresh:
+            return self.saved_groups_cache
+        
+        url = f"{self.api_url}/saved-groups"
+        try:
+            response = requests.get(url, auth=self._get_auth())
+            response.raise_for_status()
+            data = response.json()
+            
+            # The API returns a list of saved groups
+            # Response structure: {"savedGroups": [...], "limit": ..., "offset": ...}
+            items = data.get("savedGroups", []) if isinstance(data, dict) else data
+            
+            # Update cache: map both name and id -> saved group object
+            self.saved_groups_cache = {}
+            for item in items:
+                group_name = item.get("groupName") or item.get("name")
+                group_id = item.get("id")
+                if group_name:
+                    self.saved_groups_cache[group_name] = item
+                if group_id:
+                    self.saved_groups_cache[group_id] = item
+            
+            self._is_saved_groups_cache_loaded = True
+            
+            return self.saved_groups_cache
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error listing saved groups: {e}")
+            return self.saved_groups_cache  # Return existing cache on failure
+
     def get_saved_group(self, group_id):
         """
         Get a saved group by ID.
@@ -579,7 +638,7 @@ class GrowthBook:
         url = f"{self.api_url}/saved-groups/{group_id}"
         try:
             response = requests.get(url, auth=self._get_auth())
-            if response.status_code == 404:
+            if response.status_code == 400:
                 return None
             response.raise_for_status()
             return response.json()
@@ -589,19 +648,18 @@ class GrowthBook:
             print(f"Error getting saved group '{group_id}': {e}")
             return None
 
-    def create_saved_group(self, group_id, name, condition, description="", projects=None):
+    def create_saved_group(self, name, condition, projects=None):
         """
         Create a new saved group.
         
         Args:
-            group_id (str): The ID for the group (will be used as 'id').
             name (str): The display name for the group.
             condition (dict or str): The condition logic (same as rules).
             description (str, optional): Description of the group.
             projects (list, optional): List of project IDs. Defaults to [self.project].
             
         Returns:
-            dict: The created saved group object.
+            str: The ID of the created saved group, or None if failed.
         """
         url = f"{self.api_url}/saved-groups"
         
@@ -616,12 +674,10 @@ class GrowthBook:
             condition_str = str(condition)
 
         payload = {
-            "id": group_id,
             "type": "condition",
             "name": name,
             "owner": self.owner,
             "condition": condition_str,
-            "description": description,
             "projects": projects
         }
         
@@ -629,10 +685,21 @@ class GrowthBook:
             response = requests.post(url, json=payload, auth=self._get_auth())
             response.raise_for_status()
             created_group = response.json()
-            print(f"✓ Successfully created saved group: {name} ({group_id})")
-            return created_group
+            
+            # Update cache with the newly created group
+            group_data = created_group.get("savedGroup", created_group)
+            group_name = group_data.get("groupName") or group_data.get("name")
+            group_id = group_data.get("id")
+            
+            if group_name:
+                self.saved_groups_cache[group_name] = group_data
+            if group_id:
+                self.saved_groups_cache[group_id] = group_data
+            
+            print(f"✓ Successfully created saved group: {name} (ID: {group_id})")
+            return group_id
         except requests.exceptions.RequestException as e:
-            print(f"✗ Error creating saved group '{group_id}': {e}")
+            print(f"✗ Error creating saved group '{name}': {e}")
             if e.response is not None:
                 print(f"Response: {e.response.text}")
             return None
@@ -646,7 +713,7 @@ class GrowthBook:
             payload (dict): The payload to update.
             
         Returns:
-            dict: The updated saved group object.
+            str: The ID of the updated saved group, or None if failed.
         """
         url = f"{self.api_url}/saved-groups/{group_id}"
         try:
@@ -654,29 +721,33 @@ class GrowthBook:
             response.raise_for_status()
             updated_group = response.json()
             print(f"✓ Successfully updated saved group: {group_id}")
-            return updated_group
+            return group_id
         except requests.exceptions.RequestException as e:
             print(f"✗ Error updating saved group '{group_id}': {e}")
             if e.response is not None:
                 print(f"Response: {e.response.text}")
             return None
 
-    def ensure_saved_group(self, group_id, name, condition, description="", projects=None):
+    def ensure_saved_group(self, name, condition, description="", projects=None):
         """
         Ensure a saved group exists with the given configuration.
         Creates it if missing, updates it if exists.
         
         Args:
-            group_id (str): The ID for the group.
             name (str): The display name.
             condition (dict or str): The condition logic.
             description (str, optional): Description.
             projects (list, optional): List of project IDs.
             
         Returns:
-            dict: The created or updated saved group object.
+            str: The ID of the created or updated saved group, or None if failed.
         """
-        existing = self.get_saved_group(group_id)
+        # Ensure cache is populated at least once
+        if not self._is_saved_groups_cache_loaded:
+            self.list_saved_groups()
+        
+        # Check if group exists in cache by name
+        existing = self.saved_groups_cache.get(name)
         
         if projects is None and self.project:
             projects = [self.project]
@@ -693,16 +764,16 @@ class GrowthBook:
             "name": name,
             "owner": self.owner,
             "condition": condition_str,
-            "description": description,
             "projects": projects
         }
         
         if existing:
-            # We preserve the ID in logic but for PUT it's in URL.
-            # print(f"Saved group '{group_id}' already exists. Updating...")
-            return self.update_saved_group(group_id, payload)
+            # Get the group ID from the existing group
+            group_id = existing.get("id")
+            # print(f"Saved group '{name}' already exists. Updating...")
+            return group_id
         else:
-            return self.create_saved_group(group_id, name, condition, description, projects)
+            return self.create_saved_group(name, condition, projects)
 
 
 

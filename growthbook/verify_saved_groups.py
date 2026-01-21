@@ -11,10 +11,10 @@ def get_random_string(length=8):
 
 def verify_saved_groups():
     # Hardcoded credentials for verification
-    API_KEY = "secret_user_UIT15l8pxkZW9zFOCUVZE3MQElyMjWuxr345AarL2V8"
-    PROJECT_ID = "prj_3dlr11bmkdgdq7u"
-    OWNER = "lina.hoang@sotatek.com"
-    API_URL = "https://dev-growthbook-api.swagproject.co/api/v1"
+    API_KEY = "secret_user_pZ0b0Qu6vE2iaGHjbH6xj3kyDksZm79y7HOsyxuMzLw"
+    PROJECT_ID = "prj_a01tmkkm7zc9"
+    OWNER = "nam.nguyen23@sotatek.com"
+    API_URL = "http://localhost:3100/api/v1"
     
     gb = GrowthBook(api_key=API_KEY, api_url=API_URL, project=PROJECT_ID, owner=OWNER)
     
@@ -45,14 +45,13 @@ def verify_saved_groups():
     # 1. Test Ensure (Create)
     print("\n--- Test 1: Ensure (Create) ---")
     created = gb.ensure_saved_group(
-        group_id=group_id,
         name=group_name,
         condition=condition,
         description="Auto-created by verification script"
     )
     
     if created:
-        print(f"✅ Created/Ensured group: {created.get('id')}")
+        print(f"✅ Created/Ensured group: {created}")
     else:
         print("❌ Failed to create group")
         return
@@ -61,7 +60,6 @@ def verify_saved_groups():
     print("\n--- Test 2: Ensure (Update) ---")
     new_condition = {"country": "us"}
     updated = gb.ensure_saved_group(
-        group_id=group_id,
         name=group_name,
         condition=new_condition,
         description="Updated description"

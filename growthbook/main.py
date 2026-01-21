@@ -131,7 +131,7 @@ def process_all_config(config_file_path, growthbook_client):
             total_features += 1
         processed_keys += 1
         # Growthbook has limit to 60 requests per minute
-        sleep(1)
+        sleep(2)
         if processed_keys == 50:
             break
             # print(f"Processed {processed_keys} configuration keys")
