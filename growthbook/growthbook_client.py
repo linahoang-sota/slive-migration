@@ -147,10 +147,10 @@ class GrowthBook:
         2. Simple keys (beta, creator, authenticated, etc.) -> creates saved group with {is_<key>: true}
         3. Key=value pairs (country=cn) -> creates saved group with {country: cn}
         4. Ampersand-separated (utm_campaign=x&utm_medium=y) -> creates saved group with multiple conditions
+        5. Semicolon-separated (utm_campaign=x;utm_medium=y) -> creates saved group with multiple conditions
         
         Skips and logs to except.json:
         - Hyphen-separated conditions (-)
-        - Semicolon-separated conditions (;)
         
         Args:
             config_value (dict): Configuration value containing child keys like:
@@ -159,7 +159,8 @@ class GrowthBook:
                     'beta': ['value2'],
                     'creator': ['value3'],
                     'country=cn': ['value4'],
-                    'utm_campaign=x&utm_medium=y': ['value5']
+                    'utm_campaign=x&utm_medium=y': ['value5'],
+                    'utm_campaign=a;utm_medium=b': ['value6']
                 }
             config_key (str, optional): The parent config key for logging purposes
             except_file (str, optional): Path to exception log file
@@ -233,9 +234,9 @@ class GrowthBook:
                 rules.append(rule)
                 continue
             
-            # Handle ampersand-separated conditions (utm_campaign=x&utm_medium=y)
-            if "&" in child_key:
-                condition_dict, attrs = self._parse_ampersand_conditions(child_key)
+            # Handle ampersand or semicolon-separated conditions (utm_campaign=x&utm_medium=y or utm_campaign=x;utm_medium=y)
+            if "&" in child_key or ";" in child_key:
+                condition_dict, attrs = self._parse_multi_conditions(child_key)
                 attributes_needed.update(attrs)
                 
                 # Create saved group for this condition
@@ -295,15 +296,15 @@ class GrowthBook:
     
     def _has_unsupported_separator(self, key):
         """
-        Check if a key contains unsupported separators (hyphen or semicolon).
+        Check if a key contains unsupported separators (hyphen only).
         
         Supported patterns:
         - key=value (simple)
         - key1=value1&key2=value2 (ampersand-separated, supported)
+        - key1=value1;key2=value2 (semicolon-separated, supported)
         
         Unsupported patterns:
-        - key1=value1;key2=value2 (semicolon-separated)
-        - key1=value1-key2=value2 (hyphen-separated, NOT ampersand)
+        - key1=value1-key2=value2 (hyphen-separated)
         
         Args:
             key: The key to check
@@ -315,40 +316,23 @@ class GrowthBook:
         if "=" not in key:
             return False
         
-        # First, check if it's an ampersand-separated pattern (supported)
-        # If so, we should NOT flag hyphens within the values
-        if "&" in key:
-            # This is ampersand-separated, which is supported
+        # Check if it's an ampersand or semicolon-separated pattern (both supported)
+        if "&" in key or ";" in key:
+            # These are supported multi-condition patterns
             # Hyphens within values are allowed (e.g., utm_medium=non-rtb)
-            # But we still need to check for semicolons
-            value_part = key.split("=", 1)[1]
-            if ";" in value_part and "=" in value_part:
-                # Semicolon used as separator (unsupported)
-                return True
-            # Ampersand pattern is supported, don't flag hyphens
             return False
         
-        # Not ampersand-separated, check for other separators
+        # Not ampersand or semicolon-separated, check for hyphen separator
         value_part = key.split("=", 1)[1]
         
-        # Check for semicolon separator
-        if ";" in value_part:
-            # Check if semicolon is used as a separator (has another key=value after it)
-            # Split by semicolon and check if multiple parts have '='
-            parts = value_part.split(";")
-            parts_with_equals = sum(1 for part in parts if "=" in part)
-            if parts_with_equals > 0:
-                # Semicolon is being used as a separator
-                return True
-        
-        # Check for hyphen separator (only if NOT in ampersand pattern)
+        # Check for hyphen separator
         if "-" in value_part:
             # Check if hyphen is used as a separator (has another key=value after it)
             # Split by hyphen and check if multiple parts have '='
             parts = value_part.split("-")
             parts_with_equals = sum(1 for part in parts if "=" in part)
             if parts_with_equals > 0:
-                # Hyphen is being used as a separator
+                # Hyphen is being used as a separator (unsupported)
                 return True
         
         return False
@@ -392,12 +376,13 @@ class GrowthBook:
             # For multiple elements, keep the list structure
         return actual_value
     
-    def _parse_ampersand_conditions(self, condition_string):
+    def _parse_multi_conditions(self, condition_string):
         """
-        Parse ampersand-separated conditions into a condition dictionary.
+        Parse ampersand or semicolon-separated conditions into a condition dictionary.
         
         Args:
-            condition_string: e.g., "utm_campaign=my_routine&utm_medium=non-rtb&utm_source=cheongdb2u"
+            condition_string: e.g., "utm_campaign=my_routine&utm_medium=non-rtb" or
+                                   "utm_campaign=my_routine;utm_medium=non-rtb"
             
         Returns:
             tuple: (condition_dict, attributes_set)
@@ -407,8 +392,11 @@ class GrowthBook:
         condition_dict = {}
         attributes_set = set()
         
-        # Split by '&' to get individual conditions
-        parts = condition_string.split("&")
+        # Determine the separator (& or ;)
+        separator = "&" if "&" in condition_string else ";"
+        
+        # Split by the separator to get individual conditions
+        parts = condition_string.split(separator)
         
         for part in parts:
             if "=" in part:
@@ -514,6 +502,7 @@ class GrowthBook:
 
         if existing_feature:
             print(f"Feature '{feature_id}' already exists. Updating...")
+            return None
             return self.update_feature(feature_id, payload)
         
         # If not exists, add ID to payload and create
