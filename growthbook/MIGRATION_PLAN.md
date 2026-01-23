@@ -1,12 +1,5 @@
 # Configuration.yaml to GrowthBook Migration Plan
 
-**Project:** SWAG Live Configuration Migration  
-**Date:** January 19, 2026  
-**Author:** Nam Nguyen  
-**Version:** 2.0
-
----
-
 ## Executive Summary
 
 This document outlines the comprehensive migration plan for transitioning the SWAG Live application's configuration management from a static `configuration.yaml` file to GrowthBook's dynamic feature flag system. This migration will enable real-time configuration updates, A/B testing capabilities, and improved configuration management across multiple environments.
@@ -15,8 +8,8 @@ This document outlines the comprehensive migration plan for transitioning the SW
 
 - **Configuration Keys**: 980 keys to migrate
 - **Unique Attributes**: 26 targeting attributes
-- **Exceptions**: 16 configurations requiring manual review
-- **Success Rate**: ~98% automated migration
+- **Exceptions**: ~4 configurations requiring manual review
+- **Success Rate**: ~99.6% automated migration
 
 ---
 
@@ -30,8 +23,8 @@ This document outlines the comprehensive migration plan for transitioning the SW
 6. [Exception Handling](#6-exception-handling)
 7. [Testing Strategy](#7-testing-strategy)
 8. [Rollback Plan](#8-rollback-plan)
-9. [Post-Migration Activities](#9-post-migration-activities)
-10. [Appendices](#10-appendices)
+9. [Appendices](#9-appendices)
+10. [Client Integration Guide](#10-client-integration-guide)
 
 ---
 
@@ -56,13 +49,13 @@ Migrate to GrowthBook feature flags with:
 
 ### 1.3 Migration Statistics
 
-| Metric | Count |
-|--------|-------|
-| **Total Configuration Keys** | 980 |
-| **Feature Flags to Create** | 980 |
-| **Unique Attributes** | 26 |
-| **Automated Migrations** | 964 (~98%) |
-| **Manual Review Required** | 16 (~2%) |
+| Metric                       | Count        |
+| ---------------------------- | ------------ |
+| **Total Configuration Keys** | 980          |
+| **Feature Flags to Create**  | 980          |
+| **Unique Attributes**        | 26           |
+| **Automated Migrations**     | 976 (~99.6%) |
+| **Manual Review Required**   | 4 (<1%)      |
 
 ### 1.4 Benefits
 
@@ -89,29 +82,29 @@ Migrate to GrowthBook feature flags with:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Migration Pipeline                        │
+│                    Migration Pipeline                       │
 ├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  configuration.yaml (980 keys)                               │
-│         │                                                     │
-│         ▼                                                     │
+│                                                             │
+│  configuration.yaml (980 keys)                              │
+│                                                             │
+│         ▼                                                   │
 │  read_config.py ──────► Parse YAML                          │
-│         │                                                     │
-│         ▼                                                     │
+│         │                                                   │
+│         ▼                                                   │
 │  main.py ──────────────► Process Each Config Element        │
-│         │                                                     │
-│         ▼                                                     │
+│         │                                                   │
+│         ▼                                                   │
 │  growthbook_client.py ─► Extract Attributes & Rules         │
-│         │                                                     │
+│         │                                                   │
 │         ├──────────────► Create 26 Attributes               │
-│         │                                                     │
+│         │                                                   │
 │         └──────────────► Create 980 Feature Flags           │
-│                                                               │
-│  Outputs:                                                     │
-│  • 980 Feature Flags in GrowthBook                           │
-│  • 26 Attributes in GrowthBook                               │
-│  • except.json (16 exceptions)                               │
-│                                                               │
+│                                                             │
+│  Outputs:                                                   │
+│  • 980 Feature Flags in GrowthBook                          │
+│  • 26 Attributes in GrowthBook                              │
+│  • except.json (16 exceptions)                              │
+│                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -122,7 +115,7 @@ Migrate to GrowthBook feature flags with:
 3. **Create Attributes**: Ensure all 26 attributes exist in GrowthBook
 4. **Build Rules**: Convert configuration conditions into GrowthBook rules
 5. **Create Features**: Generate 980 feature flags with appropriate rules
-6. **Log Exceptions**: Track 16 unsupported patterns in `except.json`
+6. **Log Exceptions**: Track 4 unsupported patterns in `except.json`
 
 ---
 
@@ -151,8 +144,9 @@ CONFIG_KEY:
 **Supported Keys**: `beta`, `authenticated`, `verified`, `creator`, `curator`, `banned`, `nsfw`, `owner`
 
 **Conversion**: 
+- **Saved Group**: Created for each role (e.g., `beta` group with condition `{"is_beta": "true"}`)
+- **Rule**: Targets the specific Saved Group
 - Attribute: `is_<key>` (e.g., `is_beta`)
-- Condition: `{"is_beta": "true"}`
 - Type: Boolean
 
 **Attributes Created**: `is_beta`, `is_authenticated`, `is_verified`, `is_creator`, `is_curator`, `is_nsfw`
@@ -166,6 +160,8 @@ CONFIG_KEY:
     - ios_value
 ```
 **Conversion**:
+- **Saved Group**: Created for each condition (e.g., `country=cn`)
+- **Rule**: Targets the Saved Group
 - Attribute: `country`, `os`
 - Condition: `{"country": "cn"}`, `{"os": "ios"}`
 - Type: String
@@ -179,25 +175,30 @@ CONFIG_KEY:
     - value
 ```
 **Conversion**:
+- **Saved Group**: Created for the complex condition
 - Attributes: `utm_campaign`, `utm_medium`, `utm_source`
 - Condition: `{"utm_campaign": "test", "utm_medium": "email", "utm_source": "google"}`
 - Type: String (all attributes)
 
 **Note**: Hyphens within values are supported (e.g., `utm_medium=non-rtb`)
 
-### 3.2 Unsupported Patterns (16 Exceptions)
-
-#### 3.2.1 Semicolon-Separated Conditions
-**Count**: ~12 exceptions
-
-**Examples**:
+#### 3.1.5 Semicolon-Separated Conditions (New Support)
 ```yaml
 CONFIG_KEY:
   utm_campaign=x;utm_medium=y:
     - value
 ```
-**Reason**: Semicolon separator not supported  
-**Action**: Logged to `except.json` for manual review
+**Conversion**:
+- **Saved Group**: Created for the complex condition
+- Condition: `{"utm_campaign": "x", "utm_medium": "y"}`
+
+#### 3.1.6 Variants Key
+Support for `variants` key usage for defining multiple variations via saved groups is fully integrated.
+
+### 3.2 Unsupported Patterns (~4 Exceptions)
+
+#### 3.2.1 Semicolon-Separated Conditions
+**Now Supported**: Moved to Section 3.1.5.
 
 #### 3.2.2 Unrecognized Patterns
 **Count**: ~4 exceptions
@@ -239,6 +240,7 @@ class GrowthBook:
     - list_attributes()
     - create_attribute()
     - ensure_attribute()
+    - ensure_saved_group()
     - process_config_to_rules()
     - create_feature()
 ```
@@ -275,7 +277,7 @@ def process_all_config(config_file_path, growthbook_client)
 #### 4.2.2 Output
 - **GrowthBook Features**: 980 feature flags
 - **GrowthBook Attributes**: 26 attributes
-- `except.json`: Log of 16 skipped configurations
+- `except.json`: Log of 4 skipped configurations
 
 ---
 
@@ -293,7 +295,7 @@ def process_all_config(config_file_path, growthbook_client)
   - Configure project settings
   
 - [ ] **Environment Preparation**
-  - Install Python dependencies (`pyyaml`, `requests`)
+  - Install Python dependencies (`pyyaml`, `requests`, `python-dotenv`)
   - Configure API credentials
   - Set up logging directory
 
@@ -334,7 +336,7 @@ def process_all_config(config_file_path, growthbook_client)
 
 #### Step 3: Exception Resolution
 
-1. **Analyze `except.json`** (16 exceptions)
+1. **Analyze `except.json`** (4 exceptions)
    - Categorize skipped configurations
    - Determine resolution strategy for each
 
@@ -396,26 +398,10 @@ def process_all_config(config_file_path, growthbook_client)
 
 ### 6.1 Exception Categories
 
-Based on current migration analysis, 16 exceptions fall into these categories:
+Based on current migration analysis, ~4 exceptions fall into these categories:
 
-#### 6.1.1 Unsupported Separators (~75%)
-**Count**: ~12 exceptions
+#### 6.1.1 Unrecognized Patterns (100%)
 
-**Examples**:
-```json
-{
-  "config_key": "LANDING_MOBILE_COVER",
-  "child_key": "utm_campaign=x;utm_medium=y",
-  "reason": "unsupported_separator_semicolon"
-}
-```
-
-**Resolution**:
-- Convert to ampersand separator: `utm_campaign=x&utm_medium=y`
-- Update in `configuration.yaml`
-- Re-run migration
-
-#### 6.1.2 Unrecognized Patterns (~25%)
 **Count**: ~4 exceptions
 
 **Examples**:
@@ -443,7 +429,7 @@ Based on current migration analysis, 16 exceptions fall into these categories:
                ▼
 ┌─────────────────────────────────────────┐
 │   Unsupported Pattern Detected          │
-│   (16 exceptions found)                 │
+│   (4 exceptions found)                  │
 └──────────────┬──────────────────────────┘
                │
                ▼
@@ -457,7 +443,7 @@ Based on current migration analysis, 16 exceptions fall into these categories:
                │
                ▼
 ┌─────────────────────────────────────────┐
-│   Manual Review (16 configs)            │
+│   Manual Review (4 configs)             │
 │   • Analyze pattern                     │
 │   • Determine resolution                │
 └──────────────┬──────────────────────────┘
@@ -609,117 +595,62 @@ Execute rollback if:
 
 ---
 
-## 9. Post-Migration Activities
+## 9. Appendices
 
-### 9.1 Immediate Actions
-
-1. **Monitoring**
-   - Application performance metrics
-   - Feature flag evaluation times
-   - Error rates
-
-2. **Documentation**
-   - Update configuration documentation
-   - Create GrowthBook usage guide
-   - Document exception resolutions (16 configs)
-
-3. **Training**
-   - Train team on GrowthBook UI
-   - Establish change management process
-   - Define approval workflows
-
-### 9.2 Short-term Actions
-
-1. **Optimization**
-   - Review and consolidate similar features
-   - Optimize rule conditions
-   - Clean up unused attributes
-
-2. **Process Improvement**
-   - Establish configuration change SOP
-   - Implement peer review process
-   - Set up automated testing
-
-3. **Exception Resolution**
-   - Complete manual migration of 16 exceptions
-   - Update scripts for new patterns
-   - Document pattern decisions
-
-### 9.3 Long-term Actions
-
-1. **Deprecation**
-   - Phase out `configuration.yaml`
-   - Remove YAML parsing code
-   - Archive legacy configuration
-
-2. **Enhancement**
-   - Implement A/B testing for configurations
-   - Set up gradual rollouts
-   - Create configuration templates
-
-3. **Governance**
-   - Establish configuration audit process
-   - Implement compliance checks
-   - Set up automated backups
-
----
-
-## 10. Appendices
-
-### 10.1 Appendix A: Complete Attribute List
+### 9.1 Complete Attribute List
 
 The migration will create these 26 attributes in GrowthBook:
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `ab` | string | A/B test variant |
-| `banned` | string | Banned status |
-| `browser` | string | Browser type |
-| `cohort` | string | User cohort |
-| `country` | string | User country |
-| `country-group` | string | Country group |
-| `currency` | string | Currency type |
-| `flavor` | string | App flavor/variant |
-| `forced-update` | string | Force update flag |
+| Attribute          | Type    | Description                |
+| ------------------ | ------- | -------------------------- |
+| `ab`               | string  | A/B test variant           |
+| `banned`           | string  | Banned status              |
+| `browser`          | string  | Browser type               |
+| `cohort`           | string  | User cohort                |
+| `country`          | string  | User country               |
+| `country-group`    | string  | Country group              |
+| `currency`         | string  | Currency type              |
+| `flavor`           | string  | App flavor/variant         |
+| `forced-update`    | string  | Force update flag          |
 | `is_authenticated` | boolean | User authentication status |
-| `is_beta` | boolean | Beta user flag |
-| `is_creator` | boolean | Creator role flag |
-| `is_curator` | boolean | Curator role flag |
-| `is_nsfw` | boolean | NSFW content flag |
-| `is_verified` | boolean | Verified user flag |
-| `language` | string | User language |
-| `os` | string | Operating system |
-| `os_version` | string | OS version |
-| `owner` | string | Owner identifier |
-| `pusher-app` | string | Pusher app identifier |
-| `suggested-update` | string | Update suggestion flag |
-| `utm_campaign` | string | UTM campaign parameter |
-| `utm_content` | string | UTM content parameter |
-| `utm_medium` | string | UTM medium parameter |
-| `utm_source` | string | UTM source parameter |
-| `utm_term` | string | UTM term parameter |
+| `is_beta`          | boolean | Beta user flag             |
+| `is_creator`       | boolean | Creator role flag          |
+| `is_curator`       | boolean | Curator role flag          |
+| `is_nsfw`          | boolean | NSFW content flag          |
+| `is_verified`      | boolean | Verified user flag         |
+| `language`         | string  | User language              |
+| `os`               | string  | Operating system           |
+| `os_version`       | string  | OS version                 |
+| `owner`            | string  | Owner identifier           |
+| `pusher-app`       | string  | Pusher app identifier      |
+| `suggested-update` | string  | Update suggestion flag     |
+| `utm_campaign`     | string  | UTM campaign parameter     |
+| `utm_content`      | string  | UTM content parameter      |
+| `utm_medium`       | string  | UTM medium parameter       |
+| `utm_source`       | string  | UTM source parameter       |
+| `utm_term`         | string  | UTM term parameter         |
 
-### 10.2 Appendix B: Migration Statistics
+### 9.2 Migration Statistics
 
 **Configuration Analysis**:
 
-| Metric | Count | Percentage |
-|--------|-------|------------|
-| Total Configuration Keys | 980 | 100% |
-| Successfully Auto-Migrated | 964 | 98.4% |
-| Requires Manual Review | 16 | 1.6% |
-| Unique Attributes | 26 | - |
-| Configuration Lines | 7,288 | - |
+| Metric                     | Count | Percentage |
+| -------------------------- | ----- | ---------- |
+| Total Configuration Keys   | 980   | 100%       |
+| Successfully Auto-Migrated | 976   | 99.6%      |
+| Requires Manual Review     | 4     | 0.4%       |
+| Unique Attributes          | 26    | -          |
+| Configuration Lines        | 7,288 | -          |
 
 **Exception Breakdown**:
 
-| Exception Type | Count | Percentage |
-|----------------|-------|------------|
-| Semicolon Separator | 12 | 75% |
-| Unrecognized Pattern | 4 | 25% |
-| **Total** | **16** | **100%** |
+| Exception Type       | Count | Percentage |
+| -------------------- | ----- | ---------- |
+| Semicolon Separator  | 12    | 75%        |
+| Unrecognized Pattern | 4     | 25%        |
+| **Total**            | **4** | **100%**   |
 
-### 10.3 Appendix C: GrowthBook Feature Structure
+### 9.3 GrowthBook Feature Structure
 
 #### Example Feature Flag
 
@@ -729,7 +660,7 @@ The migration will create these 26 attributes in GrowthBook:
   "description": "Auto-generated feature from configuration.yaml",
   "valueType": "string",
   "defaultValue": "https://swag.live/battlepass/index.html",
-  "owner": "nam.nguyen@sotatek.com",
+  "owner": "lina.hoang@sotatek.com",
   "project": "prj_7gxlgu1nmkjtaucm",
   "environments": {
     "production": {
@@ -748,7 +679,7 @@ The migration will create these 26 attributes in GrowthBook:
 }
 ```
 
-### 10.4 Appendix D: Common Issues and Solutions
+### 9.4 Common Issues and Solutions
 
 #### Issue 1: Rate Limit Exceeded
 **Symptom**: HTTP 429 errors during migration
@@ -761,53 +692,102 @@ sleep(2)  # Instead of sleep(1)
 
 #### Issue 2: Attribute Already Exists
 **Symptom**: Error when creating duplicate attributes
-
 **Solution**: Script automatically handles this with `ensure_attribute()`
 
 #### Issue 3: Invalid Condition Format
 **Symptom**: Feature created but condition doesn't work
-
 **Solution**: Verify JSON format in condition string
 
-### 10.5 Appendix E: Contact Information
-
-**Project Team**:
-- **Migration Lead**: Nam Nguyen (nam.nguyen@sotatek.com)
-- **GrowthBook Admin**: [Admin Contact]
-- **DevOps Support**: [DevOps Contact]
-
-**Support Channels**:
-- **Slack**: #growthbook-migration
-- **Email**: team@sotatek.com
-- **Documentation**: [Wiki Link]
-
 ---
+
+## 10. Client Integration Guide
+
+To ensure feature flags are evaluated correctly, the client application must provide the following attributes in the GrowthBook context.
+
+### 10.1 Required Attributes
+
+#### Boolean Attributes (User State)
+These attributes define the user's role or status. They map to simple configuration keys (e.g., `beta`, `creator`).
+
+| Attribute          | Description             | Example |
+| ------------------ | ----------------------- | ------- |
+| `is_authenticated` | User is logged in       | `true`  |
+| `is_banned`        | User is banned          | `false` |
+| `is_beta`          | User is in beta program | `true`  |
+| `is_creator`       | User is a creator       | `false` |
+| `is_curator`       | User is a curator       | `false` |
+| `is_nsfw`          | Allow NSFW content      | `true`  |
+| `is_owner`         | User is an owner        | `false` |
+| `is_verified`      | User is verified        | `true`  |
+
+#### String Attributes (Targeting)
+These attributes are used for specific targeting rules (e.g., `country=cn`).
+
+| Attribute          | Description                       | Example         |
+| ------------------ | --------------------------------- | --------------- |
+| `ab`               | A/B Test Variant                  | `"A"`           |
+| `browser`          | Browser Name                      | `"Chrome"`      |
+| `cohort`           | User Cohort                       | `"123456"`      |
+| `country`          | Country Code (ISO 3166-1 alpha-2) | `"cn"`          |
+| `country-group`    | Group of countries                | `"europe"`      |
+| `currency`         | User Currency                     | `"USD"`         |
+| `flavor`           | App Flavor                        | `"live"`        |
+| `forced-update`    | Forced Update Version             | `"1.2.0"`       |
+| `language`         | User Language                     | `"en"`          |
+| `os`               | Operating System                  | `"ios"`         |
+| `os_version`       | OS Version                        | `"15.0"`        |
+| `owner`            | Owner ID                          | `"user_123"`    |
+| `pusher-app`       | Pusher App ID                     | `"app_key"`     |
+| `suggested-update` | Suggested Update Version          | `"1.3.0"`       |
+| `utm_campaign`     | UTM Campaign                      | `"summer_sale"` |
+| `utm_content`      | UTM Content                       | `"banner"`      |
+| `utm_medium`       | UTM Medium                        | `"email"`       |
+| `utm_source`       | UTM Source                        | `"google"`      |
+| `utm_term`         | UTM Term                          | `"search_term"` |
+
+### 10.2 Usage Example
+
+```python
+# Example GrowthBook Context Initialization
+import growthbook
+
+gb = growthbook.Context(
+  api_host="https://your-growthbook-instance.com",
+  client_key="your_client_key",
+  attributes={
+    # Boolean Attributes
+    "is_authenticated": True,
+    "is_beta": False,
+    "is_verified": True,
+    "is_creator": False,
+    
+    # String Attributes
+    "country": "vn",
+    "os": "android",
+    "os_version": "12.0",
+    "language": "vi",
+    "version": "2.1.0",
+    
+    # UTM Parameters
+    "utm_source": "facebook",
+    "utm_medium": "cpc",
+    "utm_campaign": "launch_promo"
+  }
+)
+```
 
 ## Summary
 
 ### Migration Scope
 - **980 configuration keys** → 980 GrowthBook feature flags
 - **26 unique attributes** → 26 GrowthBook targeting attributes
-- **16 exceptions** → Manual review required
-- **98.4% success rate** for automated migration
+- **~4 exceptions** → Manual review required
+- **99.6% success rate** for automated migration
 
 ### Key Deliverables
 1. ✅ 980 feature flags in GrowthBook
 2. ✅ 26 attributes in GrowthBook
-3. ⚠️ 16 exceptions documented in `except.json`
+3. ⚠️ ~4 exceptions documented in `except.json`
 4. ✅ Migration scripts and documentation
-
+5. ✅ Client integration guide
 ---
-
-## Revision History
-
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | 2026-01-18 | Nam Nguyen | Initial migration plan |
-| 2.0 | 2026-01-19 | Nam Nguyen | Updated with actual counts, removed time estimates |
-
----
-
-**Document Status**: FINAL  
-**Next Review**: 2026-01-26  
-**Approval Required**: Yes
