@@ -150,10 +150,11 @@ def main():
     args = [arg for arg in sys.argv[1:] if arg not in ['--yes', '-y']]
     
     source_env = args[0] if len(args) > 0 else "production"
-    target_env = args[1] if len(args) > 1 else "dev"
+    # Default target environments: dev, staging, test
+    target_envs = args[1:] if len(args) > 1 else ["dev", "staging", "test"]
     
     print(f"\n{'='*80}")
-    print(f"Copying rules from '{source_env}' to '{target_env}' for ALL features")
+    print(f"Copying rules from '{source_env}' to {target_envs} for ALL features")
     print(f"Rate limit: {REQUEST_DELAY}s delay between requests")
     print(f"{'='*80}\n")
     
@@ -175,18 +176,27 @@ def main():
         feature_id = feature.get("id")
         environments = feature.get("environments", {})
         
-        prod_rules = environments.get(source_env, {}).get("rules", [])
-        dev_rules = environments.get(target_env, {}).get("rules", [])
+        source_rules = environments.get(source_env, {}).get("rules", [])
         
-        if len(prod_rules) > 0 or len(dev_rules) > 0:
+        # Check if any target environment has rules or source has rules
+        has_rules = len(source_rules) > 0
+        target_rules_count = {}
+        
+        for target_env in target_envs:
+            target_rules = environments.get(target_env, {}).get("rules", [])
+            target_rules_count[target_env] = len(target_rules)
+            if len(target_rules) > 0:
+                has_rules = True
+        
+        if has_rules:
             features_to_sync.append({
                 "id": feature_id,
-                "source_rules": len(prod_rules),
-                "target_rules": len(dev_rules)
+                "source_rules": len(source_rules),
+                "target_rules_count": target_rules_count
             })
     
     print(f"\nFeatures that will be processed: {len(features_to_sync)}")
-    print(f"(Features with at least one rule in either environment)\n")
+    print(f"(Features with at least one rule in any environment)\n")
     
     if len(features_to_sync) == 0:
         print("No features need syncing")
@@ -195,8 +205,8 @@ def main():
     # Show summary
     print("Summary:")
     for f in features_to_sync:
-        status = "MATCH" if f["source_rules"] == f["target_rules"] else "DIFFERENT"
-        print(f"  {f['id']}: {source_env}={f['source_rules']} rules, {target_env}={f['target_rules']} rules [{status}]")
+        target_summary = ", ".join([f"{env}={count}" for env, count in f['target_rules_count'].items()])
+        print(f"  {f['id']}: {source_env}={f['source_rules']} rules → {target_summary} rules")
     
     # Confirm before proceeding
     print(f"\n{'='*80}")
@@ -222,16 +232,27 @@ def main():
     for i, f in enumerate(features_to_sync, 1):
         feature_id = f["id"]
         print(f"[{i}/{len(features_to_sync)}] {feature_id}")
-        print(f"  {source_env}: {f['source_rules']} rules → {target_env}: {f['target_rules']} rules")
         
-        result = copy_environment_rules(feature_id, source_env, target_env, verbose=True)
+        feature_success = 0
+        feature_skip = 0
+        feature_fail = 0
         
-        if result is True:
-            success_count += 1
-        elif result is None:
-            skip_count += 1
-        else:
-            fail_count += 1
+        for target_env in target_envs:
+            target_rules = f['target_rules_count'].get(target_env, 0)
+            print(f"  {source_env}: {f['source_rules']} rules → {target_env}: {target_rules} rules")
+            
+            result = copy_environment_rules(feature_id, source_env, target_env, verbose=True)
+            
+            if result is True:
+                feature_success += 1
+            elif result is None:
+                feature_skip += 1
+            else:
+                feature_fail += 1
+        
+        success_count += feature_success
+        skip_count += feature_skip
+        fail_count += feature_fail
         
         print()
     
@@ -240,6 +261,7 @@ def main():
     print("FINAL SUMMARY")
     print(f"{'='*80}")
     print(f"Total features processed: {len(features_to_sync)}")
+    print(f"Total operations (features × {len(target_envs)} environments): {len(features_to_sync) * len(target_envs)}")
     print(f"  ✓ Successfully copied: {success_count}")
     print(f"  ⊘ Skipped (no rules): {skip_count}")
     print(f"  ✗ Failed: {fail_count}")
