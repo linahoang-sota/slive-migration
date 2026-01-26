@@ -3,6 +3,49 @@ from growthbook_client import GrowthBook
 import os
 from time import sleep
 from dotenv import load_dotenv
+from constants import PRIORITY_ORDER
+
+
+def reorder_config_value(config_value):
+    """
+    Reorder configuration dictionary based on priority list.
+    Ensures that high-priority rules are evaluated first in GrowthBook.
+    
+    GrowthBook evaluation is top-down (first matching rule wins).
+    Rules are processed in the order they appear in config_value.
+    Therefore, we need to sort the config_value such that:
+    - High Priority items (e.g. client_id) are at the START of the dict.
+    - Low Priority items (e.g. default/country) are at the END of the dict.
+    
+    Args:
+        config_value (dict): Dictionary of configuration conditions.
+        
+    Returns:
+        dict: Reordered dictionary.
+    """
+    if not isinstance(config_value, dict):
+        return config_value
+
+    def get_priority_index(key):
+        # Normalize key (remove =value)
+        key_base = key.split('=')[0]
+        
+        # Check for exact match or startswith match in priority list
+        for i, priority_key in enumerate(PRIORITY_ORDER):
+            if key_base == priority_key or key_base.startswith(priority_key):
+                return i
+        
+        # If not found, assign high index (Low Priority)
+        return len(PRIORITY_ORDER)
+
+    # Sort items by priority index ASCENDING (High Priority = Low Index = First)
+    sorted_items = sorted(
+        config_value.items(),
+        key=lambda item: get_priority_index(item[0])
+    )
+    
+    return dict(sorted_items)
+
 
 
 def process_config_element(config_key, config_value, growthbook_client):
@@ -27,6 +70,9 @@ def process_config_element(config_key, config_value, growthbook_client):
         return None
 
     print(f"\n=== Processing Config: {config_key} ===")
+    
+    # Step 0: Reorder config_value based on priority
+    config_value = reorder_config_value(config_value)
 
     # Step 1: Process config_value into rules (also extracts needed attributes)
     print(f"Processing config into feature rules...")

@@ -495,7 +495,7 @@ class GrowthBook:
             "environments": {
                 environment: {
                     "enabled": True,
-                    "rules": list(reversed(formatted_rules))
+                    "rules": formatted_rules
                 }
             }
         }
