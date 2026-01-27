@@ -29,6 +29,8 @@ def reorder_config_value(config_value):
     def get_priority_index(key):
         # Normalize key (remove =value)
         key_base = key.split('=')[0]
+        if key_base == "country" and "country=jp" in key:
+            return 0
         
         # Check for exact match or startswith match in priority list
         for i, priority_key in enumerate(PRIORITY_ORDER):
@@ -117,7 +119,7 @@ def process_config_element(config_key, config_value, growthbook_client):
         default_value=default_value,
         description=f"Auto-generated feature from configuration.yaml",
         rules=rules,
-        environment="production",
+        environments=GROWTHBOOK_ENVIRONMENTS,
     )
 
     return feature
@@ -206,6 +208,7 @@ if __name__ == "__main__":
     GROWTHBOOK_API_KEY = os.getenv("GROWTHBOOK_API_KEY")
     GROWTHBOOK_PROJECT = os.getenv("GROWTHBOOK_PROJECT")
     GROWTHBOOK_OWNER = os.getenv("GROWTHBOOK_OWNER")
+    GROWTHBOOK_ENVIRONMENTS = os.getenv("GROWTHBOOK_ENVIRONMENTS").split(",")
     GROWTH_BOOK_API_URL = os.getenv("GROWTHBOOK_API_URL")
 
     if not GROWTHBOOK_API_KEY:

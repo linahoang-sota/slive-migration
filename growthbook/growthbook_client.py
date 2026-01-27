@@ -427,7 +427,7 @@ class GrowthBook:
         else:
             return "string"
 
-    def create_feature(self, feature_id, value_type, default_value, description="", rules=None, environment="production"):
+    def create_feature(self, feature_id, value_type, default_value, description="", rules=None, environments=None):
         """
         Creates a feature flag in GrowthBook.
         
@@ -441,7 +441,7 @@ class GrowthBook:
                 - value: The value to return when condition matches
                 - description (str, optional): Rule description
                 - enabled (bool, optional): Whether the rule is enabled (default: True)
-            environment (str, optional): The environment to create the feature in (default: "production").
+            environments (list, optional): The environments to create the feature in (default: ["production"]).
             
         Returns:
             dict: The created or updated feature data, or None if failed.
@@ -492,17 +492,14 @@ class GrowthBook:
             "defaultValue": json.dumps(default_value) if value_type == "json" else str(default_value),
             "owner": self.owner,
             "project": self.project, 
-            "environments": {
-                environment: {
-                    "enabled": True,
-                    "rules": formatted_rules
-                }
-            }
+            "environments": {environment: {
+                "enabled": True,
+                "rules": formatted_rules
+            } for environment in environments}
         }
 
         if existing_feature:
             print(f"Feature '{feature_id}' already exists. Updating...")
-            return None
             return self.update_feature(feature_id, payload)
         
         # If not exists, add ID to payload and create
