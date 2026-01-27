@@ -19,7 +19,7 @@ def verify_saved_groups():
     gb = GrowthBook(api_key=API_KEY, api_url=API_URL, project=PROJECT_ID, owner=OWNER)
     
     group_id = f"test_group_{get_random_string()}"
-    group_name = f"Test Group {get_random_string()}"
+    group_name = f"utm_content=test_geetest"
     condition = {"country": "vn"}
     
     print(f"Testing Saved Group: {group_id}")
