@@ -47,7 +47,7 @@ def parse_value_to_string(value: Any) -> str:
             return ""
         # Convert each element to string and join
         elements = [str(elem) for elem in value]
-        return " ".join(f"<{elem}>" for elem in elements)
+        return " ".join(f"{elem}" for elem in elements)
     
     # For other types (int, float, bool, dict), convert to string
     return str(value)
