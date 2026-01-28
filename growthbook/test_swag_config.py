@@ -135,7 +135,7 @@ def fetch_config(variation_id: str) -> Dict[str, Any]:
 
 def parse_variation_ids(variation_ids: List[str]) -> List[str]:
     """
-    Parse variation IDs and expand ampersand-separated conditions.
+    Parse variation IDs and expand ampersand/semicolon-separated conditions.
     
     Args:
         variation_ids: List of variation ID strings
@@ -146,9 +146,10 @@ def parse_variation_ids(variation_ids: List[str]) -> List[str]:
     expanded = []
     
     for variation_id in variation_ids:
-        # Handle ampersand-separated conditions (utm_campaign=x&utm_medium=y)
-        if "&" in variation_id:
-            parts = variation_id.split("&")
+        # Handle ampersand or semicolon-separated conditions (utm_campaign=x&utm_medium=y or utm_campaign=x;utm_medium=y)
+        if "&" in variation_id or ";" in variation_id:
+            # Split by both separators
+            parts = variation_id.replace(';', '&').split("&")
             expanded.extend(parts)
         else:
             expanded.append(variation_id)

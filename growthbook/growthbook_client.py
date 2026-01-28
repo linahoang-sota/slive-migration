@@ -206,7 +206,7 @@ class GrowthBook:
 
         default_value = None
         rules = []
-        value_type = "string"
+        value_type = "json"
         attributes_needed = set()
         skipped_keys = []
 
@@ -400,15 +400,13 @@ class GrowthBook:
         print(f"📝 Logged {len(exceptions)} skipped keys to {except_file}")
 
     def _extract_value(self, child_value):
-        """Extract actual value from potentially nested list structure."""
-        actual_value = child_value
+        """Extract actual value from potentially nested list structure as JSON array of strings."""
         if isinstance(child_value, list):
-            if len(child_value) == 1:
-                actual_value = child_value[0]
-            elif len(child_value) == 0:
-                actual_value = ""
-            # For multiple elements, keep the list structure
-        return actual_value
+            # Ensure all elements are strings
+            return [str(item) for item in child_value] if child_value else [""]
+        else:
+            # Single value, wrap in array
+            return [str(child_value)]
 
     def _parse_multi_conditions(self, condition_string):
         """
@@ -452,16 +450,12 @@ class GrowthBook:
             value: The value to infer type from
 
         Returns:
-            str: One of 'boolean', 'number', 'string', 'json'
+            str: One of 'boolean', 'json'
         """
         if isinstance(value, bool):
             return "boolean"
-        elif isinstance(value, (int, float)):
-            return "number"
-        elif isinstance(value, (list, dict)):
-            return "json"
         else:
-            return "string"
+            return "json"
 
     def create_feature(
         self,

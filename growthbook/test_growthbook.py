@@ -105,6 +105,7 @@ def parse_variation_ids_to_attributes(variation_ids):
     - 'beta', 'creator', etc. -> {'is_beta': 'true', 'is_creator': 'true'}
     - 'country=cn' -> {'country': 'cn'}
     - 'utm_campaign=x&utm_medium=y' -> {'utm_campaign': 'x', 'utm_medium': 'y'}
+    - 'utm_campaign=x;utm_medium=y' -> {'utm_campaign': 'x', 'utm_medium': 'y'}
     
     Args:
         variation_ids: List of variation ID strings
@@ -125,9 +126,10 @@ def parse_variation_ids_to_attributes(variation_ids):
             attributes[attribute_name] = "true"
             continue
         
-        # Handle ampersand-separated conditions (utm_campaign=x&utm_medium=y)
-        if "&" in variation_id:
-            parts = variation_id.split("&")
+        # Handle ampersand or semicolon-separated conditions (utm_campaign=x&utm_medium=y or utm_campaign=x;utm_medium=y)
+        if "&" in variation_id or ";" in variation_id:
+            # Split by both separators
+            parts = variation_id.replace(';', '&').split("&")
             for part in parts:
                 if "=" in part:
                     key, value = part.split("=", 1)
