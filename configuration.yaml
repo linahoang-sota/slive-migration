@@ -375,10 +375,10 @@ FACEBOOK_PIXEL_ID:
 FEATURE_ACCOUNT_LINKING:
   default:
   - ''
-FEATURE_ACCOUNT_REFERRAL_CODE_CREATOR: # (turn on: 1, turn off: 0)
+FEATURE_ACCOUNT_REFERRAL_CODE_CREATOR: # Moor 主播個人頁的推薦獎金按鈕開關 (turn on: 1, turn off: 0)
   default:
   - '1'
-  cohort=4859063:   # 日本主播
+  cohort=5332019:   # 日本主播+直播間主播
   - '0'
 FEATURE_ACCOUNT_REFERRAL_CODE: # (turn on: 1, turn off: 0)
   default:
@@ -438,7 +438,20 @@ FEATURE_LIVESTREAM_V2_API: # (turn on: 1, turn off: 0)
   beta: #V2 暫時用不到了
   - '0'
   cohort=5897245: #QA測試 v1 用
+  - '0'
+FEATURE_LIVESTREAM_V2_PREVIEW_UI_TOGGLE: # (turn on: 1, turn off: 0)
+  default:
+  - '0'
+  beta:
   - '1'
+FEATURE_LIVESTREAM_V2_UI_TOGGLE: # (turn on: 1, turn off: 0)
+  default:
+  - '0'
+  beta:
+  - '1'
+LIVESTREAM_V2_SWITCH_MODE_COUNTDOWN_THRESHOLD: # 大文字切換模式倒數時間的門檻，剩餘時間超過這個時間就不顯示，單位是秒
+  default:
+  - '5'
 FEATURE_POST_V2_API: # V2 上傳實作
   default:
   - '1'
@@ -464,6 +477,16 @@ FEATURE_LIVESTREAM_CHANGE_EXCLUSIVE_PRICE: # 主播於 Moor 介面上可以調�
   - '1'
 FEATURE_LIVESTREAM_CATEGORY_SETTINGS: # 主播於 Moor「直播資訊設定」介面，設定直播 `標籤` 功能的開關 (turn on: 1, turn off: 0)
   default:
+  - '1'
+FEATURE_API_BASED_KARAOKE_PERFORMING: # Moor 執行指令的機制，0：現有 Pusher presence 邏輯，1：Goal API 邏輯
+  default:
+  - '0'
+  beta:
+  - '1'
+FEATURE_API_BASED_SHOW_PERFORMING: # Moor 執行表演的機制，0：現有 Pusher presence 邏輯，1：Goal API 邏輯
+  default:
+  - '0'
+  beta:
   - '1'
 LIVESTREAM_CATEGORIES: # 主播於 Moor「直播資訊設定」介面，設定直播 `標籤` 的選項
   default:
@@ -613,7 +636,6 @@ FEATURE_LIVESTREAM_MANUAL_CONTROL_FUNDING: # (turn on: 1, turn off: 0)
 LIVESTREAM_ENDPOINTS: # 控制主播的串流設定選項
   default:
   - 'agora://agora.com'
-  - 'trtc://trtc.com'
   beta:
   - 'agora://agora.com'
   - 'trtc://trtc.com'
@@ -645,17 +667,15 @@ FEATURE_LIVESTREAM_AD:
   default:
   - ''
   country=tw:
-  - 'https://swag.live/iframe/?source=https%3A%2F%2Fcupagain.github.io%2F260116_campaign%2F%3Fuser_id%3D%7BUSER_ID%7D&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/260116_winter_campaign_ad.png'
+  - 'https://swag.live/iframe/?source=https%3A%2F%2Fswag.live%2Fbattlepass%2Findex.html%3Ft%3D2025120301&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/battlepass_s4_ad_tc.jpg'
   cohort=user_created__7d__tw: #中文
-  - https://swag.live?campaign-id=checkout-diamondpack&campaign=&si=https://public.swag.live/notifications/custom/EL/250729_rewh_nu_pack_ad.png
+  - https://swag.live?campaign-id=checkout-diamondpack&campaign=&si=https://public.swag.live/notifications/custom/EL/260119_7d_pack_livestream_ad.png
   country=sg:
-  - 'https://swag.live/iframe/?source=https%3A%2F%2Fcupagain.github.io%2F260116_campaign%2F%3Fuser_id%3D%7BUSER_ID%7D&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/260116_winter_campaign_ad.png'
+  - 'https://swag.live/iframe/?source=https%3A%2F%2Fswag.live%2Fbattlepass%2Findex.html%3Ft%3D2025120301&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/battlepass_s4_ad_tc.jpg'
   country=my:
-  - 'https://swag.live/iframe/?source=https%3A%2F%2Fcupagain.github.io%2F260116_campaign%2F%3Fuser_id%3D%7BUSER_ID%7D&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/260116_winter_campaign_ad.png'
+  - 'https://swag.live/iframe/?source=https%3A%2F%2Fswag.live%2Fbattlepass%2Findex.html%3Ft%3D2025120301&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/battlepass_s4_ad_tc.jpg'
   country=hk:
-  - 'https://swag.live/iframe/?source=https%3A%2F%2Fcupagain.github.io%2F260116_campaign%2F%3Fuser_id%3D%7BUSER_ID%7D&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/260116_winter_campaign_ad.png'
-  cohort=5885755: #vip lv1
-  - 'https://swag.live/iframe/?source=https%3A%2F%2Fcreators.swag.live%2F2601vipevent&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/251229_vip_offline_ad.jpg'
+  - 'https://swag.live/iframe/?source=https%3A%2F%2Fswag.live%2Fbattlepass%2Findex.html%3Ft%3D2025120301&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/battlepass_s4_ad_tc.jpg'
   cohort=user_created__1d__sg:
   - https://swag.live/flix-categories/flix_mspuiyi_video?si=https://public.swag.live/notifications/custom/JL/20250507_mspuiyi_ad_eng_new.png
   cohort=user_created__7d__sg:
@@ -675,10 +695,12 @@ FEATURE_LIVESTREAM_AD_2:
   - https://swag.live/iframe/?source=https%3A%2F%2Fswaglive.my.canva.site%2F1-vip&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/250729_rewh_nu_ad.png
   default:
   - ''
+  language=zh-hant:
+  - https://swag.live/user/692dd0e783afc9a40cd61ce6?si=https://public.swag.live/notifications/custom/EL/260127_vip_custom_ad.jpg
   country=tw:
-  - https://swag.live/iframe/?source=https%3A%2F%2Fswag.live%2Fbattlepass%2Findex.html%3Ft%3D2025120301&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/battlepass_s4_ad_tc.jpg
+  - https://swag.live/user/692dd0e783afc9a40cd61ce6?si=https://public.swag.live/notifications/custom/EL/260127_vip_custom_ad.jpg
   cohort=2692580: # TW login default
-  - https://swag.live/iframe/?source=https%3A%2F%2Fswag.live%2Fbattlepass%2Findex.html%3Ft%3D2025120301&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/battlepass_s4_ad_tc.jpg
+  - https://swag.live/user/692dd0e783afc9a40cd61ce6?si=https://public.swag.live/notifications/custom/EL/260127_vip_custom_ad.jpg
   cohort=user_created__7d__tw: #中文
   - https://swag.live/iframe/?source=https%3A%2F%2Flookerstudio.google.com%2Fembed%2Freporting%2F7636ed36-0c9c-4d3d-9fc6-e33824988c5f%2Fpage%2Fd6nfD%3Fparams%3D%7B%22ds29.hash_id%22%3A%22%7BUSER_ID%7D%22%7D&title=iframe_viewer_header&si=https://public.swag.live/notifications/custom/EL/nu_quest_ad_tc.png
   cohort=user_created__7d__hk: #中文
@@ -812,6 +834,7 @@ FREE_FLIX_FEED:
   - ''
 GIFT_CATEGORIES_CHAT: # 聊天室禮物清單
   default:
+  - valentines
   - winter-sonata
   - happy-xmas
   - thanksgiving
@@ -827,9 +850,8 @@ GIFT_CATEGORIES_CHAT: # 聊天室禮物清單
   - cosplay
   cohort=5944888: #All VIP
   - vip-exclusive-lv1
+  - valentines
   - winter-sonata
-  - happy-xmas
-  - thanksgiving
   - double11
   - purple-diamond
   - lollipop-lipstick
@@ -841,6 +863,7 @@ GIFT_CATEGORIES_CHAT: # 聊天室禮物清單
   - support
   - cosplay
   beta:
+  - valentines
   - winter-sonata
   - happy-xmas
   - thanksgiving
@@ -877,25 +900,22 @@ GIFT_CATEGORIES_CHAT: # 聊天室禮物清單
   - cosplay
 GIFT_CATEGORIES_LIVESTREAM: # 直播間禮物清單
   default:
+  - livestream-valentines
   - livestream-winter-sonata
-  - livestream-happy-xmas
-  - livestream-thanksgiving
   - livestream-1111
   - livestream-sex-toy-nov
-  - livestream-amusement-park-nov
   - livestream-vip-custom-gift
   - livestream-love-baby-nov
   cohort=5944888: #All VIP
   - livestream-vip-exclusive-v1
+  - livestream-valentines
   - livestream-winter-sonata
-  - livestream-happy-xmas
-  - livestream-thanksgiving
   - livestream-1111
   - livestream-sex-toy-nov
-  - livestream-amusement-park-nov
   - livestream-vip-custom-gift
   - livestream-love-baby-nov
   beta:
+  - livestream-valentines
   - livestream-winter-sonata
   - livestream-matt-test-2
   - livestream-happy-xmas
@@ -1242,9 +1262,13 @@ HELP_ARTICLE_URL_OFFLINE_MEETUP:
 HELP_ARTICLE_LINK_OFFLINE_EVENT:
   default:
     - 'https://swag-live.zendesk.com/hc/{LOWER_CASE_LANG}/articles/12787172812047'
+  beta:
+    - 'https://taipei-live-room.web.app/taipei-booking_v3.html'
 HELP_ARTICLE_URL_OFFLINE_EVENT:
   default:
     - 'https://swag.live/iframe?source=https://swag-live.zendesk.com/hc/{LOWER_CASE_LANG}/articles/12787172812047'
+  beta:
+    - '/iframe?source=https://taipei-live-room.web.app/taipei-booking_v3.html'
 TELEGRAM_URL:
   default:
   - https://swag.run/Wuzpu
@@ -1523,56 +1547,22 @@ HOME_VIDEO_CATEGORIES:
   - stories_top_100_unlocked_48h-global?ui=story-metadata-card
   beta:
   - pseudo_trending_hashtag
-  - stories_message_pack-global
-  - pseudo_banner
-  - flix_nu_free_video-global
-  - shorts_video_scraper?ui=shorts # Video scraper
-  - post_video_635688324a11ceb2c9fc3fa7?ui=shorts #大象
-  - post_video_64201342cad2177baf5172bd?ui=flix #天娛
-  - post_video_6487d664928e5f1bb8bc1b12?ui=flix #rabbit
-  - pseudo_video_banner
-  - posts_64201342cad2177baf5172bd #query_string 直接指定某人的所有 post
-  - pseudo_trending_hashtag
   - pseudo_showcase
-  - pseudo_livestream_showcase
   - pseudo_banner
-  - flix_eaglejp_av-global
-  - flix_curate_flix-global
-  - stories_top_100_unlocked_48h-global?ui=shorts
-  - stories_top_viewed_7d-global
-  - stories_recent_7d_global
-  - flix_showcase-global
-  - flix_recent_7d-global
-  - posts_top_unlocked_30d-global?filters=expirable:0&filters=content_type:video
-  - flix_recent_1200_diamonds-global
-  - flix_recent_360_1200_diamonds-global
-  - flix_recent_60_300_diamonds-global
-  - flix_recent_free-global
-  - flix_pro-global
-  - flix_recommended-global
+  - stories_top_100_unlocked_48h-global?ui=story-metadata-card
+  - flix_recommendation?ssr=0
+  - bta_a?ui=flix
+  - pro_produce_a?ui=flix
+  - stories_latest_a?ui=story-metadata-card
+  - new_m_a?ui=flix #最新影片
+  - user_new_creator_a?ui=user-square
+  - post_video_57a42a779f22bb6bcc434520?sorting=desc:unlocked_2w&ui=flix
+  - user_livestream-v2?ui=user-square&sorting=desc:viewers
   - pseudo_leaderboard
-  - discover_dream
-  - discover_newstar
-  - discover_new
-  - discover_sexy
-  - flix_curated-sp4-global
-  - flix_user_peachmedia
-  - user_top_creator-global
-  - stories_recommended-global
-  - flix_top_creators_western-global
-  - discover_western
-  - flix_by_hashtag_comic
-  - flix_test7788-global
-  - flix_user_oursediting
-  - flix_curate_flix-global
-  - flix_new_release-global
-  - discover_more
-  - flix_jp_video_tab-global
-  - posts_user_tianyumedia-global
-  - posts_user_daxiangtw-global
-  - posts_user_twavofficial-global
-  - posts_top_unlocked_30d-global?filters=expirable:0&filters=content_type:video
-  - post_video_65815424c3e97fd9b499c962?ui=flix #肥宅
+  - flix_category_real_sex?ui=flix
+  - flix_category_big_tits?ui=flix
+  - flix_category_face_revealed?ui=flix
+  - flix_category_blowjob?ui=flix
   default:
   - pseudo_trending_hashtag
   - pseudo_showcase
@@ -2081,11 +2071,11 @@ LIVESTREAM_KARAOKE_DEFAULT_CATEGORY:
 LIVESTREAM_KARAOKE_LOVENSE_FORCE_ACTIVE:
   default:
   - '1'
-LIVESTREAM_KARAOKE_DURATION_EDITABLE:
+LIVESTREAM_KARAOKE_DURATION_EDITABLE: # 指令秒數開關 (turn on: 1, turn off: 0)
   default:
   - '0'
   beta:
-  - '1'
+  - '0'
 LIVESTREAM_KARAOKE_DURATION:
   default:
   - '2'
@@ -3269,8 +3259,6 @@ SHOP_CURRENCIES: # 商店有支援的結帳貨幣
   - SGD
   - THB
   - VND
-  utm-campaign-telegram-01-utm-content-20230206-utm-medium-non-rtb:
-  - ''
   utm_campaign=telegram_01:
   - CNY
   - USD
@@ -3962,7 +3950,7 @@ VIP_LEVEL_DIAMONDS: # 管理 SWAG 用戶各 Level 所需要的累積鑽石數量
   - '48200000'
   - '52400000'
   - '57000000'
-VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD:
+VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD: # 設定 VIP 專屬福利「進場通知」的應用起始等級
   default:
   - '30'
   beta:
@@ -4422,7 +4410,7 @@ USER_LEVEL_BENEFIT_CTA_OFFLINE_EVENT: # 專屬福利 `馬上體驗` CTA 設定 -
   default:
   - '/iframe?source=https://swag-live.zendesk.com/hc/{LOWER_CASE_LANG}/articles/12787172812047'
   beta:
-  - '/iframe?source=https://swag-live.zendesk.com/hc/{LOWER_CASE_LANG}/articles/12787172812047'
+  - '/iframe?source=https://taipei-live-room.web.app/taipei-booking_v3.html'
 USER_LEVEL_BENEFIT_CTA_ROOM_IN_2: # 專屬福利 `馬上體驗` CTA 設定 - 進場通知
   default:
   - '/livestream/0'
@@ -4669,7 +4657,6 @@ IFRAME_ALLOWED_URLS:
   - 'https://public-ws.swag.live'
   - 'https://swag.live/'
   - 'https://creators.swag.live/'
-  - 'https://sst011.fyfys.cn'
   - 'https://public.sophisticatedwondersasiangems.xyz'
   - 'https://swwwagcy.github.io/vibe_test/'
   - 'https://gg-pp.pages.dev/'
@@ -4678,8 +4665,12 @@ IFRAME_ALLOWED_URLS:
   - 'https://campaign.r41n.cc/'
   - 'https://swaglive.my.canva.site/'
   - 'https://sites.google.com/'
-  - 'https://sst011.uspace1.com'
   - 'https://ws.getvcsc.com'
+  - 'https://taipei-live-room.web.app'
+  - 'https://1231030-ws-app.childhl.com'
+  - 'https://1231200-ws-app.getvcsc.com'
+  - 'https://1231230-ws-app.greof9.com'
+  - 'https://1231300-ws-app.getvcsc.com'
   flavor=v3-220.app.swag.live:
   - 'https://lookerstudio.google.com/?params={"ds107.hash_id":"{USER_ID}"}'
   - 'https://lookerstudio.google.com/embed/reporting/cc4b1eee-70b2-4420-a163-c5beeeb21695/page/d6nfD?params={"ds30.hash_id":"{USER_ID}"}'
@@ -4731,6 +4722,7 @@ IFRAME_ALLOWED_URLS:
   - 'https://campaign.r41n.cc/'
   - 'https://swaglive.my.canva.site/'
   - 'https://sites.google.com/'
+  - 'https://taipei-live-room.web.app'
   utm_content=test_battle_pass:
   - 'https://public-ws.swag.live'
 IFRAME_BYPASS_PROXY_WHITELIST_DOMAINS:
@@ -4745,6 +4737,7 @@ IFRAME_BYPASS_PROXY_WHITELIST_DOMAINS:
   - 'https://swaglive.my.canva.site/'
   - 'https://sites.google.com/'
   - 'https://sst011.uspace1.com'
+  - 'https://public-ws.swag.live'
   flavor=v3-220.app.swag.live:
   - 'lookerstudio.google.com'
 SHORTS_FEED_ALIAS:
@@ -4907,6 +4900,10 @@ OUTBOX_FEED_ALL_DRAFT_FILTERS:
   default:
   - '?filters=draft:1'
   - '?filters=draft:1&filters=nbf_set:1'
+  beta:
+  - '?filters=draft:1'
+  - '?filters=draft:1&filters=nbf_set:1'
+  - '?filters=draft:1&officialClip=1'
 SCHEDULE_POST_DEFAULT_DURATION_SEC: # 貼文排程最近可以發布時間
   default:
   - '3600'
@@ -5178,6 +5175,8 @@ LIVESTREAM_ANIMATION_GIFTS: # 禮物動畫
   - 'livestream-karensw-2'
   - 'livestream-littletwotwo'
   - 'livestream-bbb362001-6'
+  - 'livestream-stellajs-4'
+  - 'livestream-eeoo'
   beta:
   - 'livestream-stick2'
   - 'livestream-stick3'
@@ -5386,8 +5385,18 @@ LIVESTREAM_ANIMATION_GIFTS: # 禮物動畫
   - 'livestream-karensw-2'
   - 'livestream-littletwotwo'
   - 'livestream-bbb362001-6'
+  - 'livestream-stellajs-4'
+  - 'livestream-eeoo'
 LIVESTREAM_ANIMATION_PAG_GIFTS: # PAG禮物動畫
   default:
+  - 'livestream-valentines-marshmallow'
+  - 'livestream-valentines-gun'
+  - 'livestream-valentines-balloon'
+  - 'livestream-valentines-confession'
+  - 'livestream-valentines-arrow'
+  - 'livestream-valentines-dating'
+  - 'livestream-valentines-fly'
+  - 'livestream-valentines-motel'
   - 'livestream-cozy-scarf'
   - 'livestream-snowfall'
   - 'livestream-radiant-fireworks'
@@ -5433,6 +5442,14 @@ LIVESTREAM_ANIMATION_PAG_GIFTS: # PAG禮物動畫
   - 'livestream-lv100'
   - 'livestream-lv-100'
   beta:
+  - 'livestream-valentines-marshmallow'
+  - 'livestream-valentines-gun'
+  - 'livestream-valentines-balloon'
+  - 'livestream-valentines-confession'
+  - 'livestream-valentines-arrow'
+  - 'livestream-valentines-dating'
+  - 'livestream-valentines-fly'
+  - 'livestream-valentines-motel'
   - 'livestream-cozy-scarf'
   - 'livestream-snowfall'
   - 'livestream-radiant-fireworks'
@@ -6271,13 +6288,9 @@ CREATOR_REVENUE_PAGE_URL: # SUPPORT_WEB_VIEW_ATTACH_ACCESS_TOKEN_LIST reference 
   - 'https://swag.live/revenue?via=android-app'
 CREATOR_EVENT_PAGE_URL:  # 控制 moor navigation button campaign
   default:
-  - 'https://scorebook.events.swag.live/campaigns'
+  - 'https://creator-info-f2327.web.app/live-challengel.html?uid={USER_ID}'
   beta:
-  - 'https://lookerstudio.google.com/embed/reporting/1f58c473-086a-4008-a2ba-cde5d86114c2/page/zWYjD?params={"ds11.hash_99":"{USER_ID}","ds27.hash_99":"{USER_ID}"}'
-  cohort=4859063:   # 日本主播
-  - 'https://lookerstudio.google.com/embed/reporting/6ee5d505-9203-41d4-97da-39e7b0b070c3/page/zWYjD?params={"ds11.hash_99":"{USER_ID}","ds27.hash_99":"{USER_ID}"}'
-  cohort=4436595:
-  - 'https://lookerstudio.google.com/embed/reporting/1f58c473-086a-4008-a2ba-cde5d86114c2/page/zWYjD?params={"ds11.hash_99":"{USER_ID}","ds27.hash_99":"{USER_ID}"}'
+  - 'https://creator-info-f2327.web.app/live-challengel.html?uid={USER_ID}'
 SUPPORT_WEB_VIEW_ATTACH_ACCESS_TOKEN_LIST: # reference to CREATOR_REVENUE_PAGE_URL
   default:
   - 'https://swag.live/revenue?via=android-app'
@@ -6806,48 +6819,49 @@ FEATURE_SHOP_UI_2025MAR: # 2025 Mar: new shop UI ab testing (turn on: 1, turn of
     - '1'
 SHOP_SECTIONS_ADDVALUE: # shop addvalue sections
   beta:
-  - 'DEFAULT:anchor=battlepass,section=universal-cash-shop-section,ad=shop-ad-1200-v2,ad=shop-ad-moonpay-test,section=battle_pass-shop-section,section=centrobill-shop-section,section=flash_extra-section,anchor=nu_pass,ad=shop-ad-battlepass-v3,ad=shop-ad-day-quest,ad=shop-ad-new-referral-4,ad=shop-ad-0923-test-1,ad=shop-ad-moonpay-test,section=cny_test-section,section=sp-general-shop-section,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=periodic-shop-section,ad=shop-ad-vip-benefit-lv1,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section,section=qa-test-section'
-  - 'CNY:anchor=cn_pass,section=cn_pass-shop-section,anchor=periodic,ad=shop-ad-2025-mar,section=flash_discount-section,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'USD:anchor=anchor-general,section=weekly-event-shop-section,section=flash_discount-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'JPY:anchor=nu_pass,section=japan-extra-session,section=nu_pack_set-section,anchor=periodic,section=flash_discount-section,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'DEFAULT:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'TWD:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'CNY:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
   default: #未登入
-  - 'DEFAULT:anchor=nu_pass,section=universal-cash-shop-section,section=centrobill-shop-section,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'CNY:anchor=cn_pass,section=cn_pass-shop-section,anchor=periodic,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'DEFAULT:anchor=nu_pass,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'TWD:anchor=nu_pass,ad=shop-ad_nu_pack_twd_v5,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'CNY:anchor=nu_pass,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
   authenticated: #登入預設
-  - 'DEFAULT:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'TWD:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'CNY:anchor=cn_pass,ad=shop-ad-new-referral-4,section=cn_pass-shop-section,anchor=periodic,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'DEFAULT:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'TWD:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'CNY:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
   cohort=5673357: #複購upsell
-  - 'DEFAULT:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=pu-upsell-shop-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'TWD:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=pu-upsell-shop-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'CNY:anchor=cn_pass,ad=shop-ad-new-referral-4,section=cn_pass-shop-section,anchor=periodic,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=pu-upsell-shop-section,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'DEFAULT:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=pu-upsell-shop-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'TWD:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=pu-upsell-shop-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'CNY:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=pu-upsell-shop-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
   cohort=4937699: #all VIP
-  - 'DEFAULT:anchor=anchor-vip,section=universal-cash-shop-section,section=centrobill-shop-section,ad=shop-ad-new-referral-4,section=vip-shop-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section'
-  - 'CNY:anchor=anchor-vip,ad=shop-ad-new-referral-4,section=vip-shop-section,anchor=anchor-general,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=cn_pass-shop-section,section=general-shop-section'
+  - 'DEFAULT:anchor=anchor-vip,ad=shop-ad-new-referral-4,section=vip-shop-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section'
+  - 'CNY:anchor=anchor-vip,ad=shop-ad-new-referral-4,section=vip-shop-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section'
   cohort=5714992: #event pack 測試cohort
   - 'DEFAULT:anchor=anchor-general,section=weekly-event-shop-section,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
   cohort=user_created__7d: # for NU
-  - 'DEFAULT:anchor=nu_pass,section=universal-cash-shop-section,section=centrobill-shop-section,section=nu_pack_set-section,ad=shop-ad_nu_quest_new,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'CNY:anchor=cn_pass,section=cn_pass-shop-section,anchor=periodic,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'DEFAULT:anchor=nu_pass,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'TWD:anchor=nu_pass,ad=shop-ad_nu_pack_twd_v5,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'CNY:anchor=nu_pass,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
   cohort=5753571: # 北極星轉換受眾
-  - 'DEFAULT:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'TWD:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=sp-general-shop-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'CNY:anchor=cn_pass,ad=shop-ad-new-referral-4,section=cn_pass-shop-section,anchor=periodic,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'DEFAULT:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'TWD:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=sp-general-shop-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'CNY:anchor=anchor-general,ad=shop-ad-new-referral-4,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=sp-general-shop-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
   cohort=user_created__7d__jp: # for 日本特規禮包
-  - 'JPY:anchor=anchor-general,section=japan-extra-session,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'DEFAULT:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'TWD:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'CNY:anchor=periodic,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'JPY:anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'DEFAULT:anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'TWD:anchor=nu_pass,ad=shop-ad_nu_pack_twd_v5,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'CNY:anchor=nu_pass,ad=shop-ad_nu_pack_twd_v5,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
   country=jp: # for 日本特規禮包
-  - 'JPY:anchor=anchor-general,section=japan-extra-session,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'DEFAULT:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'TWD:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'CNY:anchor=periodic,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'JPY:anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'DEFAULT:anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'TWD:anchor=nu_pass,ad=shop-ad_nu_pack_twd_v5,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'CNY:anchor=nu_pass,ad=shop-ad_nu_pack_twd_v5,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
   language=ja: # for 日本特規禮包
-  - 'JPY:anchor=anchor-general,section=japan-extra-session,section=flash_discount-section,section=universal-cash-shop-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'DEFAULT:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'TWD:anchor=anchor-general,section=universal-cash-shop-section,section=centrobill-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
-  - 'CNY:anchor=periodic,section=universal-cash-shop-section,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,anchor=anchor-general,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'JPY:anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'DEFAULT:anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,ad=shop-ad-battlepass-v3,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'TWD:anchor=nu_pass,ad=shop-ad_nu_pack_twd_v5,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
+  - 'CNY:anchor=nu_pass,ad=shop-ad_nu_pack_twd_v5,section=nu_pack_set-section,anchor=anchor-general,section=flash_discount-section,section=flash_extra-section,section=periodic-shop-section,section=general-shop-section,anchor=anchor-vip,section=vip-shop-section'
 SHOP_PAYMENT_LINK_KEYS:
   default:
     - 'SHOP_PAYMENT_LINK_USDT'
@@ -6907,30 +6921,88 @@ ENABLE_HOTJAR: # (turn on: 1, turn off: 0)
     - '1'
   flavor=v3-200.app.swag.live:
     - '1'
-VIP_LEVEL_1_LIVESTREAM_STYLE:
+VIP_LEVEL_1_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「1」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
   default:
     - 'backgroundColor:rgba(242,194,143,0.4) borderColor: borderImage:'
-VIP_LEVEL_2_LIVESTREAM_STYLE:
+  beta:
+    - 'backgroundColor:rgba(242,194,143,0.4) borderColor: borderImage:'
+VIP_LEVEL_2_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「2」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
   default:
     - 'backgroundColor:rgba(203,203,203,0.4) borderColor: borderImage:'
-VIP_LEVEL_3_LIVESTREAM_STYLE:
+  beta:
+    - 'backgroundColor:rgba(203,203,203,0.4) borderColor: borderImage:'
+VIP_LEVEL_3_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「3」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
   default:
     - 'backgroundColor:rgba(246,195,48,0.4) borderColor: borderImage:'
-VIP_LEVEL_4_LIVESTREAM_STYLE:
+  beta:
+    - 'backgroundColor:rgba(246,195,48,0.4) borderColor: borderImage:'
+VIP_LEVEL_4_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「4」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
   default:
     - 'backgroundColor:rgba(253,143,78,0.4) borderColor:#a8a8a8 borderImage:level_chat_border_silver'
-VIP_LEVEL_5_LIVESTREAM_STYLE:
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(142,63,47,0.6)0%,rgba(142,63,47,0)100%) borderColor:#FFAB8E borderImage:'
+VIP_LEVEL_5_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「5」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
   default:
     - 'backgroundColor:rgba(24,56,168,0.4) borderColor:#a8a8a8 borderImage:level_chat_border_silver'
-VIP_LEVEL_6_LIVESTREAM_STYLE:
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(103,70,0,0.6)0%,rgba(103,70,0,0)100%) borderColor:#D4D27899 borderImage:'
+VIP_LEVEL_6_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「6」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
   default:
     - 'backgroundColor:rgba(230,34,53,0.4) borderColor:#a8a8a8 borderImage:level_chat_border_silver'
-VIP_LEVEL_7_LIVESTREAM_STYLE:
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(119,75,49,0.6)0%,rgba(119,75,49,0)100%) borderColor:#FF954D99 borderImage:'
+VIP_LEVEL_7_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「7」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
   default:
     - 'backgroundColor:rgba(67,176,64,0.3) borderColor:#aa7d2c borderImage:level_chat_border_gold'
-VIP_LEVEL_8_LIVESTREAM_STYLE:
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(28,40,85,0.6)0%,rgba(28,40,85,0)100%) borderColor:#47AFE199 borderImage:'
+VIP_LEVEL_8_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「8」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
   default:
     - 'backgroundColor:rgba(136,88,197,0.4) borderColor:#aa7d2c borderImage:level_chat_border_gold'
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(110,32,39,0.6)0%,rgba(110,32,39,0)100%) borderColor:#F9617699 borderImage:'
+VIP_LEVEL_9_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「9」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(41,74,40,0.6)0%,rgba(41,74,40,0)100%) borderColor:#00DD8999 borderImage:'
+VIP_LEVEL_10_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「10」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(72,53,97,0.6)0%,rgba(72,53,97,0)100%) borderColor:#F380FF99 borderImage:'
+VIP_LEVEL_11_LIVESTREAM_STYLE: # 直播間內進場特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「11」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(0,82,74,0.6)0%,rgba(0,82,74,0)100%) borderColor:linear-gradient(270deg,#AA7D2C{WHITESPACE}5%,#FDF5EA{WHITESPACE}20%,#EDC065{WHITESPACE}26%,#AA7D2C{WHITESPACE}36%,#AA7D2C{WHITESPACE}73%,#EDC065{WHITESPACE}85%,#AA7D2C{WHITESPACE}95%) borderImage:'
+VIP_LEVEL_1_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「1」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'borderColor:#FFAB8E'
+VIP_LEVEL_2_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「2」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'borderColor:#FFAB8E'
+VIP_LEVEL_3_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「3」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'borderColor:#FFAB8E'
+VIP_LEVEL_4_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「4」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(142,63,47,0.24)0%,rgba(142,63,47,0)100%) borderColor:#FFAB8E'
+VIP_LEVEL_5_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「5」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(103,70,0,0.24)0%,rgba(103,70,0,0)100%) borderColor:#D4D27899'
+VIP_LEVEL_6_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「6」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(119,75,49,0.24)0%,rgba(119,75,49,0)100%) borderColor:#FF954D99'
+VIP_LEVEL_7_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「7」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(28,40,85,0.24)0%,rgba(28,40,85,0)100%) borderColor:#47AFE199'
+VIP_LEVEL_8_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「8」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(110,32,39,0.24)0%,rgba(110,32,39,0)100%) borderColor:#F9617699'
+VIP_LEVEL_9_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「9」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(41,74,40, 0.24)0%,rgba(41,74,40,0) 100%) borderColor:#00DD8999'
+VIP_LEVEL_10_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「10」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(72,53,97,0.24)0%,rgba(72,53,97,0)100%) borderColor:#F380FF99'
+VIP_LEVEL_11_LIVESTREAM_CHAT_LOG_STYLE: # 直播間內聊天室 log 特效，對應 `USER_LEVEL_BENEFIT_THRESHOLD` 的「11」區間內的等級。(因應 `VIP_LEVEL_LIVESTREAM_NOTIFY_THRESHOLD` 設定的等級決定這邊是否應用到，如果有就會吃到這一設置)
+  beta:
+    - 'backgroundColor:linear-gradient(90deg,rgba(0,82,74,0.24)0%,rgba(0,82,74,0)100%) borderColor:linear-gradient(270deg,#AA7D2C{WHITESPACE}5%,#FDF5EA{WHITESPACE}20%,#EDC065{WHITESPACE}26%,#AA7D2C{WHITESPACE}36%,#AA7D2C{WHITESPACE}73%,#EDC065{WHITESPACE}85%,#AA7D2C{WHITESPACE}95%)'
 WEBVIEW_APP_BUNDLE_IDS:
   default:
     - 'food.ramen.miso'
@@ -6977,6 +7049,8 @@ FEATURE_WEBVIEW_APP_SCREENSHOT: # (turn on: 1, turn off: 0)
   utm_campaign=webview_app_test:
     - '0'
   beta:
+    - '0'
+  cohort=5955412: # QA沒有DRM的測試帳號cohort
     - '0'
 BYTEPLUS_RTM_VERSION:
   utm_campaign=byteplus_rtm_test:
@@ -7285,3 +7359,8 @@ USER_LEVEL_BADGE_PREFIX: # User level badge prefixes with date-based versioning.
   - 'user_level_20260113'
   beta:
   - 'user_level_20260113'
+APP_DOWNLOAD_LINK: # 下載 App 的連結設定，目前為 `SWAG 個人中心-下載 App` 的 CTA link
+  default:
+  - 'https://sw.agtheapp.com/'
+  beta:
+  - 'https://sw.agtheapp.com/'

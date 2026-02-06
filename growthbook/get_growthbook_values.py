@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 """
-Test script to evaluate GrowthBook features with variation IDs.
-Takes a list of variation IDs (Swag-server format) and returns matched feature values.
+Script to evaluate GrowthBook features with variation IDs.
+Takes a JSON file containing variation IDs (Swag-server format) and returns matched feature values.
 
 Usage:
-    # Run with default test cases (no arguments)
-    python test_growthbook.py
+    python get_growthbook_values.py <input.json> <output.json>
     
-    # Run with custom variation IDs
-    python test_growthbook.py default
-    python test_growthbook.py os=ios
-    python test_growthbook.py country=cn beta os=android
-    python test_growthbook.py "utm_campaign=test&utm_medium=email" os=ios
+Arguments:
+    input.json  - JSON file containing array of variation IDs
+    output.json - Output file for GrowthBook evaluation results
     
 Variation ID formats supported:
     - 'default'           -> {} (empty attributes)
@@ -20,9 +17,8 @@ Variation ID formats supported:
     - 'os=ios'            -> {'os': 'ios'}
     - 'key1=val1&key2=val2' -> {'key1': 'val1', 'key2': 'val2'}
 
-Output:
-    - With arguments: growthbook_results.json
-    - Without arguments: growthbook_default_values.json, growthbook_ios_values.json, growthbook_custom_values.json
+Example:
+    python get_growthbook_values.py input.json output.json
 """
 
 import os
@@ -47,33 +43,6 @@ SIMPLE_KEYS = {
     'beta', 'authenticated', 'verified', 'creator', 'curator', 
     'banned', 'nsfw', 'owner', 'default'
 }
-
-
-def get_all_attributes():
-    """
-    Get all configured attributes from GrowthBook.
-    
-    Returns:
-        dict: Dictionary of attributes keyed by property name
-    """
-    url = f"{GROWTHBOOK_API_URL}/attributes"
-    
-    try:
-        response = requests.get(url, auth=(GROWTHBOOK_API_KEY, ""))
-        response.raise_for_status()
-        data = response.json()
-        
-        # Get attributes list from response
-        items = data.get("attributes", []) if isinstance(data, dict) else data
-        
-        # Create dictionary keyed by property name
-        attributes = {item.get("property"): item for item in items}
-        
-        return attributes
-        
-    except Exception as e:
-        print(f"✗ Error fetching attributes: {e}")
-        return {}
 
 
 def get_feature_definitions():
@@ -171,22 +140,12 @@ def evaluate_features_with_attributes(attributes):
     )
     
     results = {}
-    matched_rules = 0
-    default_values = 0
     
     for feature_id in sorted(feature_definitions.keys()):
         # Evaluate feature
         feature_result = gb.eval_feature(feature_id)
         
         value = feature_result.value if feature_result else None
-        is_on = feature_result.on if feature_result else False
-        source = feature_result.source if feature_result else "unknown"
-        
-        # Track if rule matched vs default
-        if source == "force":
-            matched_rules += 1
-        elif source == "defaultValue":
-            default_values += 1
         
         # Store result - only include value in results
         if value is not None:
@@ -199,31 +158,47 @@ def evaluate_features_with_attributes(attributes):
 
 
 def main():
-    """Main test function"""
+    """Main function"""
+    # Check for correct number of arguments
+    if len(sys.argv) != 3:
+        print("Usage: python get_growthbook_values.py <input.json> <output.json>")
+        print("")
+        print("Arguments:")
+        print("  input.json  - JSON file containing array of variation IDs")
+        print("  output.json - Output file for GrowthBook evaluation results")
+        print("")
+        print("Variation ID formats:")
+        print("  - 'default'           -> {} (empty attributes)")
+        print("  - 'beta', 'creator'   -> {'is_beta': 'true', 'is_creator': 'true'}")
+        print("  - 'country=cn'        -> {'country': 'cn'}")
+        print("  - 'os=ios'            -> {'os': 'ios'}")
+        print("  - 'key1=val1&key2=val2' -> {'key1': 'val1', 'key2': 'val2'}")
+        print("")
+        print("Example:")
+        print("  python get_growthbook_values.py ../test_cases/case_1/variations.json output.json")
+        sys.exit(1)
+    
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    
     try:
-        # Get variation IDs from command line or show help
-        if len(sys.argv) > 1:
-            # Parse variation IDs from command line
-            variation_ids = sys.argv[1:]
-        else:
-            # Show help message
-            print("Usage: python test_growthbook.py <variation_id1> <variation_id2> ...")
-            print("")
-            print("Examples:")
-            print("  python test_growthbook.py default")
-            print("  python test_growthbook.py os=ios")
-            print("  python test_growthbook.py country=cn beta os=android")
-            print("  python test_growthbook.py \\\"utm_campaign=test&utm_medium=email\\\" os=ios")
-            print("")
-            print("Variation ID formats:")
-            print("  - 'default'           -> {} (empty attributes)")
-            print("  - 'beta', 'creator'   -> {'is_beta': 'true', 'is_creator': 'true'}")
-            print("  - 'country=cn'        -> {'country': 'cn'}")
-            print("  - 'os=ios'            -> {'os': 'ios'}")
-            print("  - 'key1=val1&key2=val2' -> {'key1': 'val1', 'key2': 'val2'}")
-            print("")
-            print("Output: growthbook_results.json")
-            return
+        # Load variation IDs from JSON file
+        try:
+            with open(input_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                # Expect array of variation IDs
+                if isinstance(data, list):
+                    variation_ids = data
+                else:
+                    print(f"Error: {input_file} should contain an array of variation IDs")
+                    sys.exit(1)
+            print(f"✓ Loaded {len(variation_ids)} variation IDs from {input_file}")
+        except FileNotFoundError:
+            print(f"Error: File not found: {input_file}")
+            sys.exit(1)
+        except json.JSONDecodeError as e:
+            print(f"Error: Invalid JSON in {input_file}: {e}")
+            sys.exit(1)
         
         # Parse variation IDs to attributes
         attributes = parse_variation_ids_to_attributes(variation_ids)
@@ -232,7 +207,6 @@ def main():
         results = evaluate_features_with_attributes(attributes)
         
         # Output results
-        output_file = "growthbook_results.json"
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(results, f, indent=2, ensure_ascii=False)
         
@@ -242,6 +216,7 @@ def main():
         print(f"\n✗ Error during evaluation: {e}")
         import traceback
         traceback.print_exc()
+        sys.exit(1)
 
 
 if __name__ == "__main__":

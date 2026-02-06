@@ -321,10 +321,10 @@ class GrowthBook:
         if skipped_keys:
             self._log_exceptions(skipped_keys, except_file)
 
-        # If no default value was found, use empty string
+        # If no default value was found, use null
         if default_value is None:
-            default_value = ""
-            print("Warning: No 'default' key found in config_value, using empty string")
+            default_value = None
+            print("Warning: No 'default' key found in config_value, using null")
 
         return default_value, rules, value_type, attributes_needed, skipped_keys
 

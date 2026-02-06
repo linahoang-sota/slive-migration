@@ -9,6 +9,7 @@ This script will:
 """
 
 import json
+import yaml
 import requests
 import os
 import time
@@ -187,7 +188,7 @@ class GrowthBookReverter:
         project_features = [f for f in all_features if f.get('project') == self.project_id]
         
         # Delete features that match configuration names
-        print(f"\n1. Deleting feature flags from configuration.json...")
+        print(f"\n1. Deleting feature flags from configuration.yaml...")
         deleted_count = 0
         for feature in project_features:
             feature_key = feature.get('id', '')  # In GrowthBook, 'id' is the feature key
@@ -291,18 +292,18 @@ def main():
     print(f"Project ID: {PROJECT_ID}")
     
     # Read configuration file to get feature names
-    print("\nReading configuration.json to identify features to delete...")
-    config_path = '/home/cuongbtq/scripts/configuration.json'
+    print("\nReading configuration.yaml to identify features to delete...")
+    config_path = '/home/cuongbtq/slive-migration/configuration.yaml'
     
     if not os.path.exists(config_path):
         print(f"✗ Configuration file not found: {config_path}")
         return
     
     with open(config_path, 'r', encoding='utf-8') as f:
-        config_data = json.load(f)
+        config_data = yaml.safe_load(f)
     
     config_feature_names = set(config_data.keys())
-    print(f"Found {len(config_feature_names)} features in configuration.json")
+    print(f"Found {len(config_feature_names)} features in configuration.yaml")
     
     # Confirm before proceeding
     print("\n" + "⚠"*30)
